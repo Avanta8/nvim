@@ -142,30 +142,76 @@ return {
       "MunifTanjim/nui.nvim",
       -- "3rd/image.nvim", -- Optional image support in preview window: See `# Preview Mode` for more information
     },
-    keys = {
-      {
-        "<leader>fe",
-        function()
-          require("neo-tree.command").execute({ toggle = true, dir = vim.loop.cwd() })
-        end,
-        desc = "Explorer NeoTree (cwd)",
-      },
-      { "<leader>e", "<leader>fe", desc = "Explorer NeoTree (cwd)", remap = true },
-      {
-        "<leader>ge",
-        function()
-          require("neo-tree.command").execute({ source = "git_status", toggle = true })
-        end,
-        desc = "Git explorer",
-      },
-      {
-        "<leader>be",
-        function()
-          require("neo-tree.command").execute({ source = "buffers", toggle = true })
-        end,
-        desc = "Buffer explorer",
-      },
-    },
+    keys = function()
+      local command = require("neo-tree.command")
+      return {
+        -- Reveal the current file, or if in an unsaved file, the current working directory.
+        -- Taken from help docs
+        {
+          "<leader>fr",
+          function()
+            local reveal_file = vim.fn.expand("%:p")
+            if reveal_file == "" then
+              reveal_file = vim.fn.getcwd()
+            else
+              local f = io.open(reveal_file, "r")
+              if f then
+                f.close(f)
+              else
+                reveal_file = vim.fn.getcwd()
+              end
+            end
+            command.execute({
+              reveal_file = reveal_file, -- path to file or folder to reveal
+              reveal_force_cwd = true, -- change cwd without asking if needed
+            })
+          end,
+          desc = "Reveal file",
+        },
+        {
+          "<leader>e",
+          function()
+            command.execute({ dir = vim.loop.cwd() })
+          end,
+          desc = "File explorer (cwd) (focus)",
+        },
+        {
+          "<leader>fE",
+          function()
+            command.execute({ toggle = true, dir = vim.loop.cwd() })
+          end,
+          desc = "File explorer (cwd) (toogle)",
+        },
+        {
+          "<leader>ge",
+          function()
+            command.execute({ source = "git_status" })
+          end,
+          desc = "Git explorer (focus)",
+        },
+        {
+          "<leader>gE",
+          function()
+            command.execute({ source = "git_status", toggle = true })
+          end,
+          desc = "Git explorer (toggle)",
+        },
+        {
+          "<leader>be",
+          function()
+            command.execute({ source = "buffers" })
+          end,
+          desc = "Buffer explorer (focus)",
+        },
+        {
+          "<leader>bE",
+          function()
+            command.execute({ source = "buffers", toggle = true })
+          end,
+          desc = "Buffer explorer (toggle)",
+        },
+      }
+    end,
     opts = {},
   },
 
