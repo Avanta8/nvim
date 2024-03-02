@@ -28,7 +28,7 @@ return {
         map("n", "<leader>gd", gs.diffthis, { desc = "Diff this" })
         map("n", "<leader>gD", function() gs.diffthis("~") end, { desc = "Diff this ~" })
 
-        map("n", "<leader>ge", gs.toggle_current_line_blame, { desc = "Toggle blame" })
+        map("n", "<leader>gw", gs.toggle_current_line_blame, { desc = "Toggle blame" })
         map("n", "<leader>gx", gs.toggle_deleted, { desc = "Toggle deleted" })
         -- stylua: ignore end
 
