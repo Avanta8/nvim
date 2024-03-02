@@ -51,6 +51,14 @@ return {
             backdrop = false,
           },
         },
+
+        treesitter = {
+          label = {
+            rainbow = {
+              enabled = true,
+            },
+          },
+        },
       },
     },
     -- stylua: ignore
