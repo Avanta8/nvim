@@ -82,6 +82,16 @@ return {
             },
           },
         },
+
+        pickers = {
+          buffers = {
+            mappings = {
+              n = {
+                ["d"] = "delete_buffer",
+              },
+            },
+          },
+        },
       }
     end,
     config = function(_, opts)
