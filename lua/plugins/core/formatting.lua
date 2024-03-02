@@ -4,7 +4,7 @@ return {
     event = "VeryLazy",
     lazy = false,
     keys = {
-      { "<leader>lk", "<cmd>ConformInfo<cr>", desc = "Conform Info" },
+      { "<leader>zc", "<cmd>ConformInfo<cr>", desc = "Conform Info" },
       {
         "<leader>lf",
         "<cmd>Format<cr>",

@@ -4,7 +4,6 @@ local setup_keymaps = function()
   core_utils.autocmd("LspAttach", {
     group = core_utils.augroup("lsp_attach"),
     callback = function(event)
-      local builtin = require("telescope.builtin")
       local map = function(mode, keys, func, desc)
         vim.keymap.set(mode, keys, func, { buffer = event.buf, desc = desc })
       end
@@ -13,14 +12,20 @@ local setup_keymaps = function()
       end
 
       -- stylua: ignore start
+      -- NOTE: these are done by goto-preview
+      -- We could (and probably) should do the mappings for goto-preview here instead. So that they
+      -- are only available for buffers that have an LSP attached.
+      --
+      -- local builtin = require("telescope.builtin")
+      -- nmap("gd", function() builtin.lsp_definitions({ reuse_win = true }) end, "Goto Definition")
+      -- nmap("gr", builtin.lsp_references, "Show References")
+      -- nmap("gD", vim.lsp.buf.declaration, "Goto Declaration")
+      -- nmap("gI", function() builtin.lsp_implementations({ reuse_win = true }) end, "Goto Implementation")
+      -- nmap("gy", function() builtin.lsp_type_definitions({ reuse_win = true }) end, "Goto Type Definition")
+
       nmap("<leader>ll", "<cmd>LspInfo<cr>", "Lsp Info")
-      nmap("gd", function() builtin.lsp_definitions({ reuse_win = true }) end, "Goto Definition")
-      nmap("gr", builtin.lsp_references, "Show References")
-      nmap("gD", vim.lsp.buf.declaration, "Goto Declaration")
-      nmap("gI", function() builtin.lsp_implementations({ reuse_win = true }) end, "Goto Implementation")
-      nmap("gy", function() builtin.lsp_type_definitions({ reuse_win = true }) end, "Goto Type Definition")
       nmap("K", vim.lsp.buf.hover, "Hover")
-      nmap("gK", vim.lsp.buf.signature_help, "Signature Help")
+      nmap("<leader>lk", vim.lsp.buf.signature_help, "Signature Help")
       map("i", "<c-k>", vim.lsp.buf.signature_help, "Signature Help")
       map({ "n", "v" }, "<leader>la", vim.lsp.buf.code_action, "Code Action")
       -- stylua: ignore end
@@ -157,12 +162,12 @@ return {
     dependencies = {
       "williamboman/mason.nvim",
     },
-    setup = false,
+    config = false,
   },
   {
     "williamboman/mason.nvim",
     cmd = "Mason",
-    keys = { { "<leader>lm", "<cmd>Mason<cr>", desc = "Mason" } },
+    keys = { { "<leader>zm", "<cmd>Mason<cr>", desc = "Mason" } },
     build = ":MasonUpdate",
     opts = {},
   },

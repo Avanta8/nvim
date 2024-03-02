@@ -52,6 +52,27 @@ return {
     end,
   },
 
+  -- Preview code in floating window
+  {
+    "rmagatti/goto-preview",
+    dependencies = core_utils.which_key_dep({
+      ["<leader>lp"] = { name = "preview" },
+    }),
+    -- TODO: Put these keymaps in lsp_attach instead.
+    keys = function()
+      local gtp = require("goto-preview")
+      return {
+        { "<leader>lpd", gtp.goto_preview_definition, desc = "Preview definition" },
+        { "<leader>lpt", gtp.goto_preview_type_definition, desc = "Preview type definition" },
+        { "<leader>lpi", gtp.goto_preview_implementation, desc = "Preview implementation" },
+        { "<leader>lpD", gtp.goto_preview_declaration, desc = "Preview declaration" },
+        { "<leader>lpr", gtp.goto_preview_references, desc = "Preview references" },
+        { "<leader>lP", gtp.close_all_win, desc = "Close preview windows" },
+      }
+    end,
+    opts = {},
+  },
+
   {
     "echasnovski/mini.bufremove",
     keys = {
@@ -171,18 +192,10 @@ return {
   },
 
   {
-    "altermo/ultimate-autopair.nvim",
-    event = { "InsertEnter", "CmdlineEnter" },
-    branch = "v0.6", --recommended as each new version will have breaking changes
-    opts = {
-      --Config goes here
-    },
-  },
-
-  {
     "nmac427/guess-indent.nvim",
     opts = {},
   },
+
   {
     "RRethy/vim-illuminate",
     event = "VeryLazy",

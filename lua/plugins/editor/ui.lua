@@ -54,7 +54,6 @@ return {
 
   {
     "echasnovski/mini.indentscope",
-    version = false, -- wait till new 0.7.0 release to put it back on semver
     event = { "BufReadPost", "BufWritePost", "BufNewFile" },
     opts = function()
       return {
@@ -62,9 +61,20 @@ return {
           delay = 0,
           animation = require("mini.indentscope").gen_animation.none(),
         },
+        mappings = {
+          -- Textobjects
+          object_scope = "ii",
+          object_scope_with_border = "ai",
+
+          -- Motions (jump to respective border line; if not present - body line)
+          goto_top = "[i",
+          goto_bottom = "]i",
+        },
+        options = {
+          try_as_border = true,
+        },
         -- symbol = "▏",
         symbol = "│",
-        options = { try_as_border = true },
       }
     end,
     init = function()

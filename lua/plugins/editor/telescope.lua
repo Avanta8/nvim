@@ -1,8 +1,12 @@
+local core_utils = require("core.utils")
 return {
   {
     "nvim-telescope/telescope.nvim",
     tag = "0.1.5",
     dependencies = {
+      dependencies = core_utils.which_key_dep({
+        ["<leader>ls"] = { name = "search" },
+      }),
       "nvim-lua/plenary.nvim",
       {
         "nvim-telescope/telescope-fzf-native.nvim",
@@ -23,13 +27,6 @@ return {
           end,
           desc = "Fuzzy find in buffer",
         },
-        {
-          "<leader>uc",
-          function()
-            builtin.colorscheme({ enable_preview = true })
-          end,
-          desc = "Pick colorscheme",
-        },
 
         -- file
         -- stylua: ignore start
@@ -37,20 +34,15 @@ return {
         { "<leader>fF", function() builtin.find_files({ cwd = utils.buffer_dir() }) end, desc = "Find file (buffer dir)" },
         { "<leader>fc", function() builtin.find_files({ cwd = vim.fn.stdpath("config") }) end, desc = "Find config" },
         { "<leader>f.", builtin.oldfiles, desc = "Find recent files" },
-        -- stylua: ignore end
+
+        -- search text
+        { "<leader>jj", builtin.live_grep, desc = "Search grep (cwd)" },
+        { "<leader>jg", function() builtin.live_grep( {cwd = utils.buffer_dir()}) end, desc = "Search grep (buffer dir)" },
+        { "<leader>jw", builtin.grep_string, desc = "Grep by current word (cwd)" },
+        { "<leader>jW", function() builtin.grep_string({ cwd = utils.buffer_dir() }) end, desc = "Grep by current word (buffer dir)" },
+        { "<leader>jb", builtin.current_buffer_fuzzy_find, desc = "Search in buffer (fuzzy)" },
 
         -- search
-        -- stylua: ignore start
-        { "<leader>sg", builtin.live_grep, desc = "Search grep (cwd)" },
-        { "<leader>sG", function() builtin.live_grep( {cwd = utils.buffer_dir()}) end, desc = "Search grep (buffer dir)" },
-        { "<leader>sw", builtin.grep_string, desc = "Grep by current word (cwd)" },
-        { "<leader>sW", function() builtin.grep_string({ cwd = utils.buffer_dir() }) end, desc = "Grep by current word (buffer dir)" },
-
-        { "<leader>sd", function() builtin.diagnostics({ bufnr = 0 }) end, desc = "Search diagnostics" },
-        { "<leader>sD", builtin.diagnostics, desc = "Search workspace diagnostics" },
-
-        { "<leader>sb", builtin.current_buffer_fuzzy_find, desc = "Search in buffer (fuzzy)" },
-
         { '<leader>s"', builtin.registers, desc = "Search registers (<C-e> to edit)" },
         { "<leader>sa", builtin.autocommands, desc = "Search autoommands" },
         { "<leader>st", builtin.builtin, desc = "Search Telescope builtins" },
@@ -61,6 +53,12 @@ return {
         { "<leader>sk", builtin.keymaps, desc = "Search keymaps" },
         { "<leader>sm", builtin.marks, desc = "Search marks" },
         { "<leader>so", builtin.vim_options, desc = "Search options" },
+        { "<leader>sz", function() builtin.colorscheme({ enable_preview = true }) end, desc = "Pick colorscheme" },
+
+        -- LSP
+        { "<leader>lsd", function() builtin.diagnostics({ bufnr = 0 }) end, desc = "Search diagnostics" },
+        { "<leader>lsf", builtin.diagnostics, desc = "Search workspace diagnostics" },
+
         -- stylua: ignore end
       }
     end,

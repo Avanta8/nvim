@@ -10,6 +10,9 @@ vim.keymap.set("!", "<c-h>", "<c-w>")
 -- Ctrl-del to delete next word
 vim.keymap.set("i", "<c-del>", "<space><esc>ce")
 
+-- Lazy info
+vim.keymap.set("n", "<leader>zl", "<cmd>Lazy<cr>", { desc = "Lazy" })
+
 -- Remap for visual block mode
 vim.keymap.set("n", "<leader>v", "<c-v>")
 
@@ -86,9 +89,6 @@ vim.keymap.set("v", ">", ">gv")
 
 -- new file
 vim.keymap.set("n", "<leader>fn", "<cmd>enew<cr>", { desc = "New File" })
-
--- highlights under cursor
-vim.keymap.set("n", "<leader>ui", vim.show_pos, { desc = "Inspect Pos" })
 
 -- tabs
 vim.keymap.set("n", "<leader><tab>l", "<cmd>tablast<cr>", { desc = "Last Tab" })
