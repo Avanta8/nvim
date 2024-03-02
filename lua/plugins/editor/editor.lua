@@ -278,4 +278,28 @@ return {
       { "[[", desc = "Prev Reference" },
     },
   },
+
+  -- Point to lsp diagnostics
+  {
+    "https://git.sr.ht/~whynothugo/lsp_lines.nvim",
+    event = "LspAttach",
+    keys = {
+      -- stylua: ignore
+      { "<leader>lj", function() vim.notify("Toggled lsp lines") require("lsp_lines").toggle() end, desc = "Toggle diagnostics lines" },
+    },
+    init = function()
+      -- Initially start with diagnostic disabled. Manually toggle it on when needed.
+      vim.diagnostic.config({ virtual_lines = false })
+    end,
+    opts = {},
+  },
+
+  -- Show diagnostics in top right corner instead of inline
+  {
+    "dgagn/diagflow.nvim",
+    event = "LspAttach",
+    opts = {
+      scope = "line",
+    },
+  },
 }
