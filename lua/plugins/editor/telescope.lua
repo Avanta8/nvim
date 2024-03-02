@@ -38,6 +38,7 @@ return {
         -- search text
         { "<leader>jj", builtin.live_grep, desc = "Search grep (cwd)" },
         { "<leader>jg", function() builtin.live_grep( {cwd = utils.buffer_dir()}) end, desc = "Search grep (buffer dir)" },
+        { "<leader>jf", function() builtin.live_grep( {grep_open_files = true}) end, desc = "Search grep (current files)" },
         { "<leader>jw", builtin.grep_string, desc = "Grep by current word (cwd)" },
         { "<leader>jW", function() builtin.grep_string({ cwd = utils.buffer_dir() }) end, desc = "Grep by current word (buffer dir)" },
         { "<leader>jb", builtin.current_buffer_fuzzy_find, desc = "Search in buffer (fuzzy)" },
