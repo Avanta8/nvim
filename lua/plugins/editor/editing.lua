@@ -189,4 +189,57 @@ return {
       { "<leader>ij", "<cmd>IMoveNode<cr>", desc = "Move chosen node" },
     },
   },
+
+  -- jumplist
+  {
+    "LeonHeidelbach/trailblazer.nvim",
+    dependencies = {
+      core_utils.which_key_dep({
+        ["<leader>m"] = { name = "trailblazer" },
+      }),
+    },
+    opts = {
+      trail_options = {
+        trail_mark_symbol_line_indicators_enabled = true,
+        symbol_line_enabled = false,
+        -- number_line_color_enabled = false,
+        multiple_mark_symbol_counters_enabled = false,
+        trail_mark_in_text_highlights_enabled = false,
+      },
+      force_mappings = { -- rename this to "force_mappings" to completely override default mappings and not merge with them
+        nv = { -- Mode union: normal & visual mode. Can be extended by adding i, x, ...
+          motions = {
+            new_trail_mark = "<leader>mm",
+            track_back = "<leader>ml",
+            peek_move_next_down = "<leader>mi",
+            peek_move_previous_up = "<leader>mo",
+            move_to_nearest = "<leader>mn",
+            toggle_trail_mark_list = "<leader>mt",
+          },
+          actions = {
+            delete_all_trail_marks = "<leader>md",
+            paste_at_last_trail_mark = "<leader>mp",
+            paste_at_all_trail_marks = "<leader>mP",
+            -- set_trail_mark_select_mode = "<A-t>",
+            -- switch_to_next_trail_mark_stack = "<A-.>",
+            -- switch_to_previous_trail_mark_stack = "<A-,>",
+            -- set_trail_mark_stack_sort_mode = "<A-s>",
+          },
+        },
+      },
+    },
+  },
+
+  {
+    "otavioschwanck/arrow.nvim",
+    dependencies = {
+      core_utils.which_key_dep({
+        ["<leader>a"] = { "arrow" },
+      }),
+    },
+    opts = {
+      show_icons = true,
+      leader_key = "<leader>a",
+    },
+  },
 }
