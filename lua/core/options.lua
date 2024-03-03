@@ -34,13 +34,13 @@ vim.opt.signcolumn = "yes" -- Always show the signcolumn, otherwise it would shi
 vim.opt.smartcase = true -- Don't ignore case with capitals
 vim.opt.smartindent = true -- Insert indents automatically
 vim.opt.spelllang = { "en" }
--- opt.splitbelow = true -- Put new windows below current
+vim.opt.splitbelow = true -- Put new windows below current
 -- opt.splitkeep = "screen"
--- opt.splitright = true -- Put new windows right of current
+vim.opt.splitright = true -- Put new windows right of current
 vim.opt.swapfile = false -- Disable swap file
 vim.opt.tabstop = 4 -- Number of spaces tabs count for
 vim.opt.termguicolors = true -- True color support
-vim.opt.timeoutlen = 300
+vim.opt.timeoutlen = 500
 vim.opt.undofile = true
 vim.opt.undolevels = 10000
 -- opt.updatetime = 200 -- Save swap file and trigger CursorHold
@@ -57,3 +57,19 @@ vim.opt.virtualedit = "block" -- Allow cursor to move where there is no text in 
 --   diff = "╱",
 --   eob = " ",
 -- }
+
+vim.diagnostic.config({
+  underline = true,
+  update_in_insert = false,
+  virtual_text = {
+    spacing = 4,
+    source = true,
+    prefix = "●",
+  },
+  severity_sort = true,
+})
+
+for name, icon in pairs(require("core.custom").icons.diagnostics) do
+  name = "DiagnosticSign" .. name
+  vim.fn.sign_define(name, { text = icon, texthl = name, numhl = "" })
+end
