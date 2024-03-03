@@ -78,9 +78,10 @@ return {
 
       local server_configs = opts.servers or {}
       local function setup_server(server_name)
+        -- vim.notify("setup server: " .. server_name, vim.log.levels.DEBUG)
         local server_config = server_configs[server_name]
 
-        -- if `server_config` == nil, then it may not be explicitly setup by the user.
+        -- if `server_config` == nil, then it may not be explicitly provided by the user.
         -- It may be installed by mason, and `setup_server` was called by mason-lspconfig
         -- In this case, we still do want to set up the lsp (with the default setup).
         server_config = server_config or {}
@@ -150,19 +151,34 @@ return {
     end,
   },
   {
-    enabled = false,
-    "WhoIsSethDaniel/mason-tool-installer.nvim",
-    dependencies = {
-      "williamboman/mason.nvim",
-    },
-    opts = {},
-  },
-  {
     "williamboman/mason-lspconfig.nvim",
     dependencies = {
       "williamboman/mason.nvim",
     },
     config = false,
+  },
+  {
+    -- NOTE:
+    -- For some reason, if this plugin is lazy loaded, then it doesn't install the ensure_installed servers.
+    "WhoIsSethDaniel/mason-tool-installer.nvim",
+    dependencies = {
+      "williamboman/mason.nvim",
+    },
+    opts = {
+      -- NOTE: ensure_installed should NOT be provided in the format that mason-tool-installer wants!
+      -- This is because lazy (due to using vim.tbl_deep_extend) doesn't merge lists
+      -- properly (it overwrites instead). Therefore, we use a slightly different format
+      -- and then convert into the expected format for mason-tool-installer.
+      ensure_installed = {},
+    },
+    config = function(_, opts)
+      local ensure = vim.deepcopy(opts.ensure_installed)
+      for name, s_opts in pairs(opts.ensure_installed) do
+        ensure[#ensure + 1] = vim.tbl_extend("error", { name }, s_opts)
+      end
+      opts.ensure_installed = ensure
+      require("mason-tool-installer").setup(opts)
+    end,
   },
   {
     "williamboman/mason.nvim",

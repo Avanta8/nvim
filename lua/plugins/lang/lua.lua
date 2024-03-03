@@ -10,7 +10,9 @@ return {
   {
     "WhoIsSethDaniel/mason-tool-installer.nvim",
     opts = {
-      ensure_installed = { "stylua" },
+      ensure_installed = {
+        stylua = {},
+      },
     },
   },
   {
@@ -21,8 +23,8 @@ return {
           settings = {
             Lua = {
               completion = {
-                -- callSnippet = "Replace",
-                callSnippet = "Both",
+                callSnippet = "Replace",
+                -- callSnippet = "Both",
               },
               diagnostics = {
                 -- testing

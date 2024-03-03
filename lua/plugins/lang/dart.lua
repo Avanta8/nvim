@@ -16,6 +16,7 @@ return {
         -- But this is more "future proof"! (in case it does become available by mason and
         -- we somehow accidently install it by mason)
         dartls = {
+          mason = false,
           setup = false,
         },
       },
@@ -23,7 +24,6 @@ return {
   },
   {
     "akinsho/flutter-tools.nvim",
-    lazy = false,
     dependencies = {
       "nvim-lua/plenary.nvim",
       "stevearc/dressing.nvim", -- optional for vim.ui.select
