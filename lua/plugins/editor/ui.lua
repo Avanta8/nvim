@@ -106,6 +106,14 @@ return {
     opts = {},
   },
 
+  -- incremental rename
+  {
+    "smjonas/inc-rename.nvim",
+    opts = {
+      input_buffer_type = "dressing",
+    },
+  },
+
   {
     "nvimdev/dashboard-nvim",
     dependencies = {
