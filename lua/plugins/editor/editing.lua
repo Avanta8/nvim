@@ -230,6 +230,7 @@ return {
     },
   },
 
+  -- jump buffers
   {
     "otavioschwanck/arrow.nvim",
     dependencies = {
@@ -240,6 +241,20 @@ return {
     opts = {
       show_icons = true,
       leader_key = "<leader>a",
+    },
+  },
+
+  {
+    "zbirenbaum/copilot.lua",
+    cmd = "Copilot",
+    build = ":Copilot auth",
+    opts = {
+      suggestion = { enabled = false },
+      panel = { enabled = false },
+      filetypes = {
+        markdown = true,
+        help = true,
+      },
     },
   },
 }

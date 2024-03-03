@@ -36,6 +36,11 @@ return {
           return "make install_jsregexp"
         end)(),
       },
+      {
+        "zbirenbaum/copilot-cmp",
+        dependencies = { "zbirenbaum/copilot.lua" },
+        opts = {},
+      },
       "saadparwaiz1/cmp_luasnip",
       "hrsh7th/cmp-nvim-lsp",
       "hrsh7th/cmp-buffer",
