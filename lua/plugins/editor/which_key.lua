@@ -10,7 +10,7 @@ return {
         ["["] = { name = "+prev" },
         ["<leader><tab>"] = { name = "+tabs" },
         ["<leader>b"] = { name = "+buffers" },
-        ["<leader>l"] = { name = "+code" },
+        -- ["<leader>l"] = { name = "+code" },  -- done in lsp mapping
         ["<leader>f"] = { name = "+file" },
         ["<leader>g"] = { name = "+git" },
         ["<leader>gh"] = { name = "+hunks" },

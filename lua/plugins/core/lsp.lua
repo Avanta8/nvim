@@ -4,57 +4,53 @@ local setup_keymaps = function()
   core_utils.autocmd("LspAttach", {
     group = core_utils.augroup("lsp_attach"),
     callback = function(event)
-      local map = function(mode, keys, func, desc)
-        vim.keymap.set(mode, keys, func, { buffer = event.buf, desc = desc })
-      end
-      local nmap = function(keys, func, desc)
-        map("n", keys, func, desc)
-      end
+      local register = require("which-key").register
 
       local builtin = require("telescope.builtin")
-      -- NOTE: these are done by goto-preview
-      -- We could (and probably) should do the mappings for goto-preview here instead. So that they
-      -- are only available for buffers that have an LSP attached.
-      --
-      -- TODO: use which-key to bind these mappings instead
-      --
-      -- stylua: ignore start
-      -- nmap("gd", function() builtin.lsp_definitions({ reuse_win = true }) end, "Goto Definition")
-      -- nmap("gr", builtin.lsp_references, "Show References")
-      -- nmap("gD", vim.lsp.buf.declaration, "Goto Declaration")
-      -- nmap("gI", function() builtin.lsp_implementations({ reuse_win = true }) end, "Goto Implementation")
-      -- nmap("gy", function() builtin.lsp_type_definitions({ reuse_win = true }) end, "Goto Type Definition")
-      -- stylua: ignore end
+      local gtp = require("goto-preview")
 
-      nmap("<leader>lps", builtin.lsp_document_symbols, "Document Symbols")
-      nmap("<leader>lpw", builtin.lsp_workspace_symbols, "Workspace Symbols")
-      nmap("<leader>lpW", builtin.lsp_dynamic_workspace_symbols, "Dynamic Workspace Symbols")
-
-      nmap("<leader>ll", "<cmd>LspInfo<cr>", "Lsp Info")
-      nmap("K", vim.lsp.buf.hover, "Hover")
-      nmap("<leader>lk", vim.lsp.buf.signature_help, "Signature Help")
-      map("i", "<c-k>", vim.lsp.buf.signature_help, "Signature Help")
-      map({ "n", "v" }, "<leader>la", vim.lsp.buf.code_action, "Code Action")
-      -- stylua: ignore end
-      nmap("<leader>lA", function()
-        vim.lsp.buf.code_action({
-          context = {
-            only = {
-              "source",
-            },
-            diagnostics = {},
-          },
-        })
-      end, "Source action")
-
+      local lsp_rename = vim.lsp.buf.rename
       if core_utils.has_plugin("inc-rename.nvim") then
-        nmap("<leader>lr", function()
-          local inc_rename = require("inc_rename")
-          return ":" .. inc_rename.config.cmd_name .. " " .. vim.fn.expand("<cword>")
-        end, "Rename")
-      else
-        nmap("<leader>lr", vim.lsp.buf.rename, "Rename")
+        local inc_rename = require("inc_rename")
+        -- kinda jank way of doing this, but we need to simulate the user actually typeing these keys.
+        lsp_rename = function()
+          return vim.fn.feedkeys(":" .. inc_rename.config.cmd_name .. " " .. vim.fn.expand("<cword>"))
+        end
       end
+
+      local opts = { buffer = event.buf }
+
+      register({
+        K = { vim.lsp.buf.hover, "Hover" },
+        ["<c-k>"] = { vim.lsp.buf.signature_help, "Signature Help", mode = { "i" } },
+        ["<leader>"] = {
+          l = {
+            name = "lsp",
+            P = { gtp.close_all_win, "Close preview windows" },
+            p = {
+              name = "preview",
+              d = { gtp.goto_preview_definition, "Definition" },
+              t = { gtp.goto_preview_type_definition, "Type Definition" },
+              i = { gtp.goto_preview_implementation, "Implementation" },
+              D = { gtp.goto_preview_declaration, "Declaration" },
+              r = { gtp.goto_preview_references, "References" },
+              s = { builtin.lsp_document_symbols, "Document Symbols" },
+              w = { builtin.lsp_workspace_symbols, "Workspace Symbols" },
+              W = { builtin.lsp_dynamic_workspace_symbols, "Dynamic Workspace Symbols" },
+            },
+            l = { "<cmd>LspInfo<cr>", "Lsp Info" },
+            k = { vim.lsp.buf.signature_help, "Signature Help" },
+            r = { lsp_rename, "Rename" },
+            a = { vim.lsp.buf.code_action, "Code Action", mode = { "n", "v" } },
+            A = {
+              function()
+                vim.lsp.buf.code_action({ context = { only = { "source" }, diagnostics = {} } })
+              end,
+              "Source action",
+            },
+          },
+        },
+      }, opts)
     end,
   })
 end

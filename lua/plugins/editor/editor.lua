@@ -55,21 +55,6 @@ return {
   -- Preview code in floating window
   {
     "rmagatti/goto-preview",
-    dependencies = core_utils.which_key_dep({
-      ["<leader>lp"] = { name = "preview" },
-    }),
-    -- TODO: Put these keymaps in lsp_attach instead.
-    keys = function()
-      local gtp = require("goto-preview")
-      return {
-        { "<leader>lpd", gtp.goto_preview_definition, desc = "Preview definition" },
-        { "<leader>lpt", gtp.goto_preview_type_definition, desc = "Preview type definition" },
-        { "<leader>lpi", gtp.goto_preview_implementation, desc = "Preview implementation" },
-        { "<leader>lpD", gtp.goto_preview_declaration, desc = "Preview declaration" },
-        { "<leader>lpr", gtp.goto_preview_references, desc = "Preview references" },
-        { "<leader>lP", gtp.close_all_win, desc = "Close preview windows" },
-      }
-    end,
     opts = {},
   },
 
