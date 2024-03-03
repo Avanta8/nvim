@@ -11,17 +11,24 @@ local setup_keymaps = function()
         map("n", keys, func, desc)
       end
 
-      -- stylua: ignore start
+      local builtin = require("telescope.builtin")
       -- NOTE: these are done by goto-preview
       -- We could (and probably) should do the mappings for goto-preview here instead. So that they
       -- are only available for buffers that have an LSP attached.
       --
-      -- local builtin = require("telescope.builtin")
+      -- TODO: use which-key to bind these mappings instead
+      --
+      -- stylua: ignore start
       -- nmap("gd", function() builtin.lsp_definitions({ reuse_win = true }) end, "Goto Definition")
       -- nmap("gr", builtin.lsp_references, "Show References")
       -- nmap("gD", vim.lsp.buf.declaration, "Goto Declaration")
       -- nmap("gI", function() builtin.lsp_implementations({ reuse_win = true }) end, "Goto Implementation")
       -- nmap("gy", function() builtin.lsp_type_definitions({ reuse_win = true }) end, "Goto Type Definition")
+      -- stylua: ignore end
+
+      nmap("<leader>lps", builtin.lsp_document_symbols, "Document Symbols")
+      nmap("<leader>lpw", builtin.lsp_workspace_symbols, "Workspace Symbols")
+      nmap("<leader>lpW", builtin.lsp_dynamic_workspace_symbols, "Dynamic Workspace Symbols")
 
       nmap("<leader>ll", "<cmd>LspInfo<cr>", "Lsp Info")
       nmap("K", vim.lsp.buf.hover, "Hover")
