@@ -115,6 +115,12 @@ return {
   },
 
   {
+    "folke/todo-comments.nvim",
+    dependencies = { "nvim-lua/plenary.nvim" },
+    opts = {},
+  },
+
+  {
     "nvimdev/dashboard-nvim",
     dependencies = {
       { "nvim-tree/nvim-web-devicons" },
