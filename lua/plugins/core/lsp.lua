@@ -24,6 +24,7 @@ local setup_keymaps = function()
         K = { vim.lsp.buf.hover, "Hover" },
         ["<c-k>"] = { vim.lsp.buf.signature_help, "Signature Help", mode = { "i" } },
         ["<leader>"] = {
+          zi = { "<cmd>LspInfo<cr>", "Lsp Info" },
           l = {
             name = "lsp",
             P = { gtp.close_all_win, "Close preview windows" },
@@ -34,11 +35,25 @@ local setup_keymaps = function()
               i = { gtp.goto_preview_implementation, "Implementation" },
               D = { gtp.goto_preview_declaration, "Declaration" },
               r = { gtp.goto_preview_references, "References" },
+            },
+            l = {
+              name = "search",
+              d = { builtin.lsp_definitions, "Definition" },
+              t = { builtin.lsp_type_definitions, "Type Definition" },
+              i = { builtin.lsp_implementations, "Implementation" },
+              D = { vim.lsp.buf.declaration, "Declaration" },
+              r = { builtin.lsp_references, "References" },
               s = { builtin.lsp_document_symbols, "Document Symbols" },
               w = { builtin.lsp_workspace_symbols, "Workspace Symbols" },
               W = { builtin.lsp_dynamic_workspace_symbols, "Dynamic Workspace Symbols" },
+              e = {
+                function()
+                  builtin.diagnostics({ bufnr = 0 })
+                end,
+                "Diagnostics",
+              },
+              E = { builtin.diagnostics, "Workspace Diagnostics" },
             },
-            l = { "<cmd>LspInfo<cr>", "Lsp Info" },
             k = { vim.lsp.buf.signature_help, "Signature Help" },
             r = { lsp_rename, "Rename" },
             a = { vim.lsp.buf.code_action, "Code Action", mode = { "n", "v" } },
