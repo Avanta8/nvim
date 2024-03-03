@@ -67,6 +67,7 @@ return {
       local actions = require("telescope.actions")
       return {
         defaults = {
+          initial_mode = "normal",
           sorting_strategy = "ascending",
           layout_config = {
             prompt_position = "top",
