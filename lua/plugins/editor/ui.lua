@@ -1,8 +1,33 @@
 return {
   -- vim.notify
+  -- {
+  --   "j-hui/fidget.nvim",
+  --   opts = {},
+  -- },
+
   {
-    "j-hui/fidget.nvim",
+    "echasnovski/mini.notify",
+    lazy = false,
     opts = {},
+    keys = {
+      {
+        "<leader>sn",
+        function()
+          require("mini.notify").show_history()
+        end,
+        desc = "Show notify",
+      },
+    },
+    config = function(_, opts)
+      local notify = require("mini.notify")
+      notify.setup(opts)
+
+      vim.notify = notify.make_notify({
+        ERROR = { duration = 5000 },
+        WARN = { duration = 4000 },
+        INFO = { duration = 3000 },
+      })
+    end,
   },
 
   -- Nice UI for pickers. eg, code actions

@@ -24,7 +24,7 @@ local setup_keymaps = function()
         K = { vim.lsp.buf.hover, "Hover" },
         ["<c-k>"] = { vim.lsp.buf.signature_help, "Signature Help", mode = { "i" } },
         ["<leader>"] = {
-          zi = { "<cmd>LspInfo<cr>", "Lsp Info" },
+          zl = { "<cmd>LspInfo<cr>", "Lsp Info" },
           l = {
             name = "lsp",
             P = { gtp.close_all_win, "Close preview windows" },

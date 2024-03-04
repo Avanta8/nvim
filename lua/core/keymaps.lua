@@ -11,7 +11,7 @@ vim.keymap.set("!", "<c-h>", "<c-w>")
 vim.keymap.set("i", "<c-del>", "<space><esc>ce")
 
 -- Lazy info
-vim.keymap.set("n", "<leader>zl", "<cmd>Lazy<cr>", { desc = "Lazy" })
+vim.keymap.set("n", "<leader>zz", "<cmd>Lazy<cr>", { desc = "Lazy" })
 
 -- Remap for visual block mode
 vim.keymap.set("n", "<leader>v", "<c-v>")
