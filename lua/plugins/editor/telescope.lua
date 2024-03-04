@@ -19,7 +19,13 @@ return {
       local utils = require("telescope.utils")
 
       return {
-        { "<leader><space>", builtin.buffers, desc = "Find buffer" },
+        {
+          "<leader><space>",
+          function()
+            builtin.buffers({ sort_mru = true })
+          end,
+          desc = "Find buffer",
+        },
         {
           "<leader>/",
           function()
