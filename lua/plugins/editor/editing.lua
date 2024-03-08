@@ -34,19 +34,26 @@ return {
           enabled = false,
         },
         -- Disable char mode for now as it affect dot (.) repeat with t and f actions
+        -- char = {
+        --   enabled = true,
+        --   -- jump_labels = true,
+        --   multi_line = false,
+        --   char_actions = function(motion)
+        --     return {
+        --       [";"] = "right", -- set to `right` to always go right
+        --       [","] = "left", -- set to `left` to always go left
+        --       -- jump2d style: same case goes next, opposite case goes prev
+        --       [motion] = "next",
+        --       [motion:match("%l") and motion:upper() or motion:lower()] = "prev",
+        --     }
+        --   end,
+        --   highlight = {
+        --     backdrop = false,
+        --   },
+        -- }
         char = {
-          enabled = false,
-          -- jump_labels = true,
           multi_line = false,
-          char_actions = function(motion)
-            return {
-              [";"] = "right", -- set to `right` to always go right
-              [","] = "left", -- set to `left` to always go left
-              -- jump2d style: same case goes next, opposite case goes prev
-              [motion] = "next",
-              [motion:match("%l") and motion:upper() or motion:lower()] = "prev",
-            }
-          end,
+          keys = { "f", "F", "t", "T" },
           highlight = {
             backdrop = false,
           },
@@ -65,8 +72,8 @@ return {
     keys = {
       -- { "<CR>", mode = { "n", "x", "o" }, function() require("flash").jump() end, desc = "Flash" },
       -- { "<S-CR>", mode = { "n", "x", "o" }, function() require("flash").treesitter() end, desc = "Flash Treesitter" },
-      { "\\", mode = { "n", "x", "o" }, function() require("flash").jump() end, desc = "Flash" },
-      { "|", mode = { "n", "x", "o" }, function() require("flash").treesitter() end, desc = "Flash Treesitter" },
+      { ";", mode = { "n", "x", "o" }, function() require("flash").jump() end, desc = "Flash" },
+      { ",", mode = { "n", "x", "o" }, function() require("flash").treesitter() end, desc = "Flash Treesitter" },
       { "r", mode = "o", function() require("flash").remote() end, desc = "Remote Flash" },
       { "R", mode = { "o", "x" }, function() require("flash").treesitter_search() end, desc = "Treesitter Search" },
       { "<c-s>", mode = { "c" }, function() require("flash").toggle() end, desc = "Toggle Flash Search" },
@@ -114,6 +121,7 @@ return {
       local ai = require("mini.ai")
       return {
         n_lines = 500,
+        search_method = "cover",
         custom_textobjects = {
           o = ai.gen_spec.treesitter({
             a = { "@block.outer", "@conditional.outer", "@loop.outer" },
@@ -243,6 +251,11 @@ return {
     opts = {
       show_icons = true,
       leader_key = "<leader>a",
+      separate_save_and_remove = true,
+      mappings = {
+        toggle = "a",
+        open_horizontal = "s",
+      },
     },
   },
 
@@ -251,8 +264,22 @@ return {
     cmd = "Copilot",
     build = ":Copilot auth",
     opts = {
-      suggestion = { enabled = false },
-      panel = { enabled = false },
+      suggestion = {
+        enabled = true,
+        auto_trigger = true,
+        keymap = {
+          accept = "<C-y>",
+          accept_word = false,
+          accept_line = false,
+          next = "<M-]>",
+          prev = "<M-[>",
+          dismiss = "<C-]>",
+        },
+      },
+      panel = {
+        enabled = true,
+        auto_refresh = true,
+      },
       filetypes = {
         markdown = true,
         help = true,
