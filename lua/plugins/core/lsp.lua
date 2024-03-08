@@ -10,7 +10,8 @@ local setup_keymaps = function()
       local gtp = require("goto-preview")
 
       local lsp_rename = vim.lsp.buf.rename
-      if core_utils.has_plugin("inc-rename.nvim") then
+      -- NOTE: disable this for now
+      if false and core_utils.has_plugin("inc-rename.nvim") then
         local inc_rename = require("inc_rename")
         -- kinda jank way of doing this, but we need to simulate the user actually typeing these keys.
         lsp_rename = function()
