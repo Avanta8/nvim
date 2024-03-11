@@ -23,9 +23,10 @@ return {
       notify.setup(opts)
 
       vim.notify = notify.make_notify({
-        ERROR = { duration = 5000 },
-        WARN = { duration = 4000 },
-        INFO = { duration = 3000 },
+        ERROR = { duration = 10000 },
+        WARN = { duration = 10000 },
+        INFO = { duration = 10000 },
+        DEBUG = { duration = 5000 },
       })
     end,
   },
@@ -115,6 +116,11 @@ return {
         end,
       })
     end,
+  },
+
+  {
+    "briangwaltney/paren-hint.nvim",
+    opts = {},
   },
 
   {

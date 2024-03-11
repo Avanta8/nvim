@@ -219,7 +219,9 @@ return {
         { "<leader>qd", persistence.stop, desc = "Don't Save Current Session" },
       }
     end,
-    opts = {},
+    opts = {
+      options = { "buffers", "curdir", "folds", "help", "tabpages", "winsize", "terminal" },
+    },
   },
 
   {
@@ -286,5 +288,11 @@ return {
     opts = {
       scope = "line",
     },
+  },
+
+  {
+    "m4xshen/hardtime.nvim",
+    dependencies = { "MunifTanjim/nui.nvim", "nvim-lua/plenary.nvim" },
+    opts = {},
   },
 }

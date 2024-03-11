@@ -1,5 +1,12 @@
 return {
   {
+    "Shatur/neovim-ayu",
+    opts = {},
+    config = function(_, opts)
+      require("ayu").setup(opts)
+    end,
+  },
+  {
     "catppuccin/nvim",
     name = "catppuccin",
     opts = {
