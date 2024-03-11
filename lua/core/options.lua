@@ -1,9 +1,12 @@
 vim.g.mapleader = " "
 vim.g.maplocalleader = " "
 
+vim.g.enable_inlay_hint = true
+
 -- local opt = vim.opt
 --
 -- opt.autowrite = true -- Enable auto write
+vim.opt.backspace = "indent,eol,nostop"
 vim.opt.breakindent = true
 vim.opt.clipboard = "unnamedplus" -- Sync with system clipboard
 -- opt.completeopt = "menu,menuone,noselect"
@@ -72,4 +75,13 @@ vim.diagnostic.config({
 for name, icon in pairs(require("core.custom").icons.diagnostics) do
   name = "DiagnosticSign" .. name
   vim.fn.sign_define(name, { text = icon, texthl = name, numhl = "" })
+end
+
+-- https://github.com/neovim/nvim-lspconfig/wiki/UI-Customization
+local border = "rounded"
+local orig_util_open_floating_preview = vim.lsp.util.open_floating_preview
+function vim.lsp.util.open_floating_preview(contents, syntax, opts, ...)
+  opts = opts or {}
+  opts.border = opts.border or border
+  return orig_util_open_floating_preview(contents, syntax, opts, ...)
 end
