@@ -20,9 +20,13 @@ vim.keymap.set("n", "<leader>v", "<c-v>")
 vim.keymap.set("n", "Q", "q")
 vim.keymap.set("n", "q", "<nop>")
 
--- Paste without overwriting yank register.
+-- Paste without overwriting yank register
 vim.keymap.set("x", "P", '"_dP')
 vim.keymap.set("x", "<leader>p", '"_dP')
+
+-- Paste from yank register
+vim.keymap.set("n", "<leader>p", '"0p')
+vim.keymap.set("n", "<leader>P", '"0P')
 
 -- Delete without overwriting yank register.
 vim.keymap.set({ "n", "x" }, "<leader>d", '"_d')
@@ -73,7 +77,7 @@ vim.keymap.set("v", "<A-k>", ":m '<-2<cr>gv=gv", { desc = "Move up" })
 vim.keymap.set("n", "[d", vim.diagnostic.goto_prev, { desc = "Go to previous diagnostic message" })
 vim.keymap.set("n", "]d", vim.diagnostic.goto_next, { desc = "Go to next diagnostic message" })
 vim.keymap.set("n", "<leader>ld", vim.diagnostic.open_float, { desc = "Line diagnostics" })
-vim.keymap.set("n", "<leader>lq", vim.diagnostic.setloclist, { desc = "Open diagnostic quickfix list" })
+vim.keymap.set("n", "<leader>le", vim.diagnostic.setloclist, { desc = "Open diagnostic quickfix list" })
 
 -- https://github.com/mhinz/vim-galore#saner-behavior-of-n-and-n
 vim.keymap.set("n", "n", "'Nn'[v:searchforward].'zv'", { expr = true, desc = "Next search result" })
