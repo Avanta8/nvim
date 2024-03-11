@@ -64,9 +64,35 @@ local setup_keymaps = function()
               end,
               "Source action",
             },
+            h = {
+              function()
+                if vim.lsp.inlay_hint == nil then
+                  vim.notify("Inlay hints not supported", vim.log.levels.WARN)
+                  return
+                end
+
+                -- local enable = not vim.lsp.inlay_hint.is_enabled()
+                vim.g.enable_inlay_hint = not vim.g.enable_inlay_hint
+                local enable = vim.g.enable_inlay_hint
+                vim.notify("Inlay hints " .. (enable and "enabled" or "disabled"), vim.log.levels.INFO)
+
+                -- Toggle inlay hints for all buffers
+                local get_ls = vim.tbl_filter(function(buf)
+                  return vim.api.nvim_buf_is_valid(buf) and vim.api.nvim_get_option_value("buflisted", { buf = buf })
+                end, vim.api.nvim_list_bufs())
+                for _, buf in ipairs(get_ls) do
+                  vim.lsp.inlay_hint.enable(buf, enable)
+                end
+              end,
+              "Toggle inlay hints",
+            },
           },
         },
       }, opts)
+
+      if vim.lsp.inlay_hint ~= nil then
+        vim.lsp.inlay_hint.enable(event.buf, vim.g.enable_inlay_hint)
+      end
     end,
   })
 end
