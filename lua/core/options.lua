@@ -9,6 +9,7 @@ vim.g.enable_inlay_hint = true
 vim.opt.backspace = "indent,eol,nostop"
 vim.opt.breakindent = true
 vim.opt.clipboard = "unnamedplus" -- Sync with system clipboard
+vim.opt.cmdheight = 0 -- Height of command bar
 -- opt.completeopt = "menu,menuone,noselect"
 -- opt.conceallevel = 2 -- Hide * markup for bold and italic, but not markers with substitutions
 -- opt.confirm = true -- Confirm to save changes before exiting modified buffer
