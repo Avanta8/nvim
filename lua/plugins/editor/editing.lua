@@ -6,11 +6,68 @@ return {
     "altermo/ultimate-autopair.nvim",
     event = { "InsertEnter", "CmdlineEnter" },
     branch = "v0.6", --recommended as each new version will have breaking changes
-    opts = {},
+    opts = function(_, opts)
+      if true then
+        return {}
+      end
+      local function prev_line_text()
+        local line, col = unpack(vim.api.nvim_win_get_cursor(0))
+        local line_text = vim.api.nvim_buf_get_lines(0, line - 1, line, true)[1]
+        local prev_text = line_text:sub(1, col)
+        return prev_text
+      end
+
+      local function matches(patterns)
+        local prev_text = prev_line_text()
+        for _, pattern in ipairs(patterns) do
+          if prev_text:find(pattern) then
+            return true
+          end
+        end
+        return false
+      end
+
+      return {
+        {
+          "<",
+          ">",
+          cond = function(a, b, c)
+            -- for k, v in pairs(a) do
+            --   vim.print(k, v)
+            -- end
+            -- vim.print(getmetatable(b))
+            local t = getmetatable(b)
+            if t ~= nil and t.__index.key == ">" then
+              return true
+            end
+            -- print(type(t))
+            -- vim.print(t.__index)
+            -- print(t.__index.key)
+            -- for k, v in getmetatable(b) do
+            --   print(k, v)
+            -- end
+            -- if getmetatable(b).__index.key == ">" then
+            --   return true
+            -- end
+            local patterns = {
+              ":$",
+              "%w$",
+            }
+            return matches(patterns)
+          end,
+          fly = true,
+          dosuround = true,
+          newline = true,
+          space = true,
+          ft = { "rust" },
+        },
+      }
+    end,
   },
 
   -- Surround brackets: add, delete, change
   {
+    enabled = false,
     "kylechui/nvim-surround",
     version = "*", -- Use for stability; omit to use `main` branch for the latest features
     event = "VeryLazy",
@@ -40,7 +97,7 @@ return {
     event = "VeryLazy",
     opts = {
       label = {
-        uppercase = false,
+        -- uppercase = false,
         after = false,
         before = true,
       },
@@ -71,7 +128,7 @@ return {
         -- }
         char = {
           multi_line = false,
-          keys = { "f", "F", "t", "T" },
+          keys = { "f", "F", "t", "T", [";"] = "<C-;>", [","] = "<C-,>" },
           highlight = {
             backdrop = false,
           },
@@ -96,6 +153,23 @@ return {
       { "R", mode = { "o", "x" }, function() require("flash").treesitter_search() end, desc = "Treesitter Search" },
       { "<c-s>", mode = { "c" }, function() require("flash").toggle() end, desc = "Toggle Flash Search" },
     },
+    config = function(_, opts)
+      require("flash").setup(opts)
+      -- core_utils.autocmd("CmdwinEnter", {
+      --   group = core_utils.augroup("unbind_cr"),
+      --   callback = function(event)
+      --     vim.keymap.del({ "n" }, "<CR>")
+      --   end,
+      -- })
+      -- core_utils.autocmd("CmdwinLeave", {
+      --   group = core_utils.augroup("rebind_cr"),
+      --   callback = function(event)
+      --     vim.keymap.set({ "n" }, "<CR>", function()
+      --       require("flash").jump()
+      --     end, { desc = "Flash" })
+      --   end,
+      -- })
+    end,
   },
 
   -- Commenting
@@ -278,6 +352,7 @@ return {
   },
 
   {
+    enabled = false,
     "zbirenbaum/copilot.lua",
     cmd = "Copilot",
     build = ":Copilot auth",

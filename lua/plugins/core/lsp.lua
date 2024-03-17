@@ -4,6 +4,7 @@ local setup_keymaps = function()
   core_utils.autocmd("LspAttach", {
     group = core_utils.augroup("lsp_attach"),
     callback = function(event)
+      local client = vim.lsp.get_client_by_id(event.data.client_id)
       local register = require("which-key").register
 
       local builtin = require("telescope.builtin")
@@ -25,7 +26,6 @@ local setup_keymaps = function()
         K = { vim.lsp.buf.hover, "Hover" },
         ["<c-k>"] = { vim.lsp.buf.signature_help, "Signature Help", mode = { "i" } },
         ["<leader>"] = {
-          zl = { "<cmd>LspInfo<cr>", "Lsp Info" },
           l = {
             name = "lsp",
             P = { gtp.close_all_win, "Close preview windows" },
@@ -109,11 +109,12 @@ return {
       -- plugin but not 100% sure.
       { "folke/neodev.nvim", opts = {} },
     },
+    keys = {
+      { "<leader>zl", "<cmd>LspInfo<cr>", desc = "Lsp Info" },
+    },
     event = "VeryLazy",
     opts = {},
     config = function(_, opts)
-      -- require("neodev").setup({})
-      -- require("mason").setup()
       local lspconfig = require("lspconfig")
 
       setup_keymaps()
@@ -193,6 +194,10 @@ return {
         ensure_installed = ensure_installed,
         handlers = { setup_server },
       })
+
+      -- Lsp doesn't start properly when opening a file directly unless we add this
+      -- https://www.reddit.com/r/neovim/comments/14cikep/comment/jokw2j6/
+      vim.api.nvim_exec_autocmds("FileType", {})
     end,
   },
   {

@@ -18,7 +18,7 @@ return {
         "gitsigns",
         "harpoon",
         "hop",
-        "illuminate",
+        -- "illuminate",
         "indent-blankline",
         "lspsaga",
         "mini",
@@ -45,7 +45,6 @@ return {
     },
     init = function()
       vim.g.material_style = "palenight"
-      vim.cmd.colorscheme("material")
     end,
   },
   {
@@ -54,9 +53,28 @@ return {
     opts = {
       flavour = "macchiato",
       integrations = {
+        illuminate = {
+          enabled = false,
+          lsp = false,
+        },
         mason = true,
+        navic = {
+          enabled = true,
+        },
         neotree = true,
+        treesitter_context = true,
+        which_key = true,
       },
     },
+    init = function()
+      vim.cmd.colorscheme("catppuccin")
+    end,
+  },
+  {
+    "HiPhish/rainbow-delimiters.nvim",
+    opts = {},
+    config = function(_, opts)
+      require("rainbow-delimiters.setup").setup(opts)
+    end,
   },
 }

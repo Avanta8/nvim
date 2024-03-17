@@ -119,6 +119,7 @@ return {
   },
 
   {
+    enabled = false,
     "briangwaltney/paren-hint.nvim",
     opts = {},
   },
@@ -127,7 +128,19 @@ return {
     "nvim-lualine/lualine.nvim",
     event = "VeryLazy",
     dependencies = { "nvim-tree/nvim-web-devicons" },
-    opts = {},
+    opts = function(_, opts)
+      local sections = {
+        lualine_a = { "mode" },
+        lualine_b = { "branch", "diff", "diagnostics" },
+        lualine_c = { "filename" },
+        lualine_x = { "encoding", "fileformat", "filetype" },
+        lualine_y = { "progress" },
+        lualine_z = { "location" },
+      }
+      opts.sections = opts.sections or {}
+      vim.list_extend(sections.lualine_c, opts.sections.lualine_c or {})
+      opts.sections = sections
+    end,
   },
 
   -- incremental rename

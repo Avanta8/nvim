@@ -1,4 +1,5 @@
 local core_utils = require("core.utils")
+local custom = require("core.custom")
 
 return {
   {
@@ -294,5 +295,99 @@ return {
     "m4xshen/hardtime.nvim",
     dependencies = { "MunifTanjim/nui.nvim", "nvim-lua/plenary.nvim" },
     opts = {},
+  },
+
+  {
+    "stevearc/oil.nvim",
+    dependencies = { "nvim-tree/nvim-web-devicons" },
+    keys = {
+      { "<leader>fo", "<CMD>Oil<CR>", desc = "Oil" },
+    },
+    opts = {},
+  },
+
+  {
+    "echasnovski/mini.files",
+    keys = {
+      {
+        "<leader>fm",
+        function()
+          require("mini.files").open()
+        end,
+        desc = "Mini Files",
+      },
+    },
+    opts = {},
+  },
+
+  {
+    "SmiteshP/nvim-navic",
+    event = "LspAttach",
+    dependencies = {
+      "neovim/nvim-lspconfig",
+      {
+        "nvim-lualine/lualine.nvim",
+        opts = function(_, opts)
+          opts.sections = opts.sections or {}
+          opts.sections.lualine_c = opts.sections.lualine_c or {}
+          table.insert(opts.sections.lualine_c, {
+            function()
+              return require("nvim-navic").get_location()
+            end,
+            cond = function()
+              return package.loaded["nvim-navic"] and require("nvim-navic").is_available()
+            end,
+          })
+        end,
+      },
+    },
+    init = function()
+      vim.api.nvim_create_autocmd("LspAttach", {
+        group = core_utils.augroup("navic_lsp_attach"),
+        callback = function(event)
+          local navic = require("nvim-navic")
+          local client = vim.lsp.get_client_by_id(event.data.client_id)
+          if client.server_capabilities.documentSymbolProvider then
+            navic.attach(client, event.buf)
+          end
+        end,
+      })
+    end,
+    opts = {
+      icons = custom.icons.kinds,
+      highlight = true,
+    },
+  },
+
+  {
+    "SmiteshP/nvim-navbuddy",
+    event = "LspAttach",
+    dependencies = {
+      "neovim/nvim-lspconfig",
+      "SmiteshP/nvim-navic",
+      "MunifTanjim/nui.nvim",
+    },
+    init = function()
+      vim.api.nvim_create_autocmd("LspAttach", {
+        group = core_utils.augroup("navbuddy_lsp_attach"),
+        callback = function(event)
+          local navbuddy = require("nvim-navbuddy")
+          local client = vim.lsp.get_client_by_id(event.data.client_id)
+          if not client.server_capabilities.documentSymbolProvider then
+            return
+          end
+
+          navbuddy.attach(client, event.buf)
+          require("which-key").register({
+            ["<leader>ln"] = { navbuddy.open, "Navbuddy" },
+          }, { buffer = event.buf })
+        end,
+      })
+    end,
+    opts = function()
+      return {
+        icons = custom.icons.kinds,
+      }
+    end,
   },
 }

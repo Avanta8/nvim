@@ -20,7 +20,11 @@ vim.keymap.set("n", "<leader>v", "<c-v>")
 vim.keymap.set("n", "Q", "q")
 vim.keymap.set("n", "q", "<nop>")
 
--- Paste without overwriting yank register
+-- Add empty lines before and after cursor line
+vim.keymap.set("n", "gO", "<CMD>call append(line('.') - 1, repeat([''], v:count1))<CR>")
+vim.keymap.set("n", "go", "<CMD>call append(line('.'),     repeat([''], v:count1))<CR>")
+
+-- Paste without overwriting unnamed register
 vim.keymap.set("x", "P", '"_dP')
 vim.keymap.set("x", "<leader>p", '"_dP')
 
@@ -28,15 +32,15 @@ vim.keymap.set("x", "<leader>p", '"_dP')
 vim.keymap.set("n", "<leader>p", '"0p')
 vim.keymap.set("n", "<leader>P", '"0P')
 
--- Delete without overwriting yank register.
+-- Delete without overwriting unnamed register.
 vim.keymap.set({ "n", "x" }, "<leader>d", '"_d')
 vim.keymap.set({ "n", "x" }, "<leader>D", '"_D')
 
--- Change without overwriting yank register.
+-- Change without overwriting unnamed register.
 vim.keymap.set({ "n", "x" }, "<leader>c", '"_c')
 vim.keymap.set({ "n", "x" }, "<leader>C", '"_C')
 
--- Delete char without overwriting yank register.
+-- Delete char without overwriting unnamed register.
 vim.keymap.set({ "n", "x" }, "<leader>x", '"_x')
 vim.keymap.set({ "n", "x" }, "<leader>X", '"_X')
 

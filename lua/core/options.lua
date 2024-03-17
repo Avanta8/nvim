@@ -1,7 +1,7 @@
 vim.g.mapleader = " "
 vim.g.maplocalleader = " "
 
-vim.g.enable_inlay_hint = true
+vim.g.enable_inlay_hint = false
 
 -- local opt = vim.opt
 --
@@ -19,7 +19,7 @@ vim.opt.expandtab = true -- Use spaces instead of tabs
 -- opt.grepformat = "%f:%l:%c:%m"
 vim.opt.grepprg = "rg --vimgrep"
 vim.opt.ignorecase = true -- Ignore case
--- opt.inccommand = "nosplit" -- preview incremental substitute
+vim.opt.inccommand = "split" -- preview incremental substitute
 vim.opt.laststatus = 3 -- global statusline
 vim.opt.list = true -- Show some invisible characters (tabs...
 vim.opt.mouse = "a" -- Enable mouse mode
