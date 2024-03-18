@@ -51,7 +51,13 @@ return {
     "catppuccin/nvim",
     name = "catppuccin",
     opts = {
+      dim_inactive = {
+        enabled = true,
+        shade = "light",
+        percentage = 0.20,
+      },
       flavour = "macchiato",
+      -- flavour = "mocha",
       integrations = {
         illuminate = {
           enabled = false,

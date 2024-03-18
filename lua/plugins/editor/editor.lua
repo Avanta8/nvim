@@ -10,10 +10,12 @@ return {
       { "<leader>bp", "<Cmd>BufferLineTogglePin<CR>", desc = "Toggle pin" },
       { "<leader>bP", "<Cmd>BufferLineGroupClose ungrouped<CR>", desc = "Delete non-pinned buffers" },
       { "<leader>bo", "<Cmd>BufferLineCloseOthers<CR>", desc = "Delete other buffers" },
-      { "<leader>br", "<Cmd>BufferLineCloseRight<CR>", desc = "Delete buffers to the right" },
-      { "<leader>bl", "<Cmd>BufferLineCloseLeft<CR>", desc = "Delete buffers to the left" },
-      { "<S-h>", "<cmd>BufferLineCyclePrev<cr>", desc = "Prev buffer" },
-      { "<S-l>", "<cmd>BufferLineCycleNext<cr>", desc = "Next buffer" },
+      { "<leader>bL", "<Cmd>BufferLineCloseRight<CR>", desc = "Delete buffers to the right" },
+      { "<leader>bH", "<Cmd>BufferLineCloseLeft<CR>", desc = "Delete buffers to the left" },
+      { "<leader>bl", "<CMD>BufferLineCycleNext<CR>", desc = "Next buffer" },
+      { "<leader>bh", "<CMD>BufferLineCyclePrev<CR>", desc = "Prev buffer" },
+      -- { "<S-h>", "<cmd>BufferLineCyclePrev<cr>", desc = "Prev buffer" },
+      -- { "<S-l>", "<cmd>BufferLineCycleNext<cr>", desc = "Next buffer" },
       { "[b", "<cmd>BufferLineCyclePrev<cr>", desc = "Prev buffer" },
       { "]b", "<cmd>BufferLineCycleNext<cr>", desc = "Next buffer" },
     },
@@ -98,9 +100,33 @@ return {
       window = {
         padding = 0,
         margin = { horizontal = 0, vertical = 0 },
+        placement = {
+          horizontal = "right",
+          -- horizontal = "left",
+          -- vertical = "bottom",
+          vertical = "top",
+        },
       },
+      -- render = function(props)
+      --   local helpers = require("incline.helpers")
+      --   local devicons = require("nvim-web-devicons")
+      --   local filename = vim.fn.fnamemodify(vim.api.nvim_buf_get_name(props.buf), ":t")
+      --   if filename == "" then
+      --     filename = "[No Name]"
+      --   end
+      --   local ft_icon, ft_color = devicons.get_icon_color(filename)
+      --   local modified = vim.bo[props.buf].modified
+      --   return {
+      --     ft_icon and { " ", ft_icon, " ", guibg = ft_color, guifg = helpers.contrast_color(ft_color) } or "",
+      --     " ",
+      --     { filename, gui = modified and "bold,italic" or "bold" },
+      --     " ",
+      --     guibg = "#44406e",
+      --   }
+      -- end,
       render = function(props)
         local helpers = require("incline.helpers")
+        local navic = require("nvim-navic")
         local devicons = require("nvim-web-devicons")
         local filename = vim.fn.fnamemodify(vim.api.nvim_buf_get_name(props.buf), ":t")
         if filename == "" then
@@ -108,13 +134,44 @@ return {
         end
         local ft_icon, ft_color = devicons.get_icon_color(filename)
         local modified = vim.bo[props.buf].modified
-        return {
-          ft_icon and { " ", ft_icon, " ", guibg = ft_color, guifg = helpers.contrast_color(ft_color) } or "",
-          " ",
+
+        local create_navic_context = function()
+          local context = {}
+          local data = navic.get_data(props.buf) or {}
+          for i, item in ipairs(data) do
+            table.insert(context, {
+              { item.icon, group = "NavicIcons" .. item.type },
+              { item.name, group = "NavicText" },
+            })
+            if i < #data then
+              context[#context + 1] = { " > ", group = "NavicSeparator" }
+            end
+          end
+          return context
+        end
+
+        local filename_section = {
           { filename, gui = modified and "bold,italic" or "bold" },
           " ",
-          guibg = "#44406e",
+          ft_icon and { " ", ft_icon, " ", guibg = ft_color, guifg = helpers.contrast_color(ft_color) } or "",
         }
+
+        local res = {
+          guibg = "#282642",
+          " ",
+        }
+
+        if props.focused then
+          local context = create_navic_context()
+          if #context > 0 then
+            res[#res + 1] = context
+            res[#res + 1] = " │ "
+          end
+        end
+
+        res[#res + 1] = filename_section
+
+        return res
       end,
     },
   },
@@ -308,16 +365,74 @@ return {
 
   {
     "echasnovski/mini.files",
-    keys = {
-      {
-        "<leader>fm",
-        function()
-          require("mini.files").open()
+    keys = function()
+      local files = require("mini.files")
+      return {
+        { "<leader>fm", files.open, desc = "Mini Files" },
+        {
+          "<leader>fM",
+          function()
+            files.open(vim.api.nvim_buf_get_name(0), false)
+          end,
+          desc = "Mini Files (buffer dir)",
+        },
+      }
+    end,
+    init = function()
+      vim.api.nvim_create_autocmd("User", {
+        pattern = "MiniFilesWindowUpdate",
+        callback = function(args)
+          vim.wo[args.data.win_id].relativenumber = true
         end,
-        desc = "Mini Files",
+      })
+
+      local files_set_cwd = function(path)
+        local cur_entry_path = MiniFiles.get_fs_entry().path
+        local cur_directory = vim.fs.dirname(cur_entry_path)
+        vim.fn.chdir(cur_directory)
+        vim.notify("Set cwd to " .. cur_directory, vim.log.levels.INFO)
+      end
+
+      vim.api.nvim_create_autocmd("User", {
+        pattern = "MiniFilesBufferCreate",
+        callback = function(args)
+          vim.keymap.set("n", "!", files_set_cwd, { buffer = args.data.buf_id, desc = "Set cwd" })
+        end,
+      })
+
+      local map_split = function(buf_id, lhs, direction)
+        local rhs = function()
+          -- Make new window and set it as target
+          local new_target_window
+          vim.api.nvim_win_call(MiniFiles.get_target_window(), function()
+            vim.cmd(direction .. " split")
+            new_target_window = vim.api.nvim_get_current_win()
+          end)
+
+          MiniFiles.set_target_window(new_target_window)
+        end
+
+        -- Adding `desc` will result into `show_help` entries
+        local desc = "Split " .. direction
+        vim.keymap.set("n", lhs, rhs, { buffer = buf_id, desc = desc })
+      end
+
+      vim.api.nvim_create_autocmd("User", {
+        pattern = "MiniFilesBufferCreate",
+        callback = function(args)
+          local buf_id = args.data.buf_id
+          map_split(buf_id, "gs", "belowright horizontal")
+          map_split(buf_id, "gv", "belowright vertical")
+        end,
+      })
+    end,
+
+    opts = {
+      windows = {
+        preview = true,
+        width_preview = 50,
       },
     },
-    opts = {},
   },
 
   {
@@ -327,18 +442,19 @@ return {
       "neovim/nvim-lspconfig",
       {
         "nvim-lualine/lualine.nvim",
-        opts = function(_, opts)
-          opts.sections = opts.sections or {}
-          opts.sections.lualine_c = opts.sections.lualine_c or {}
-          table.insert(opts.sections.lualine_c, {
-            function()
-              return require("nvim-navic").get_location()
-            end,
-            cond = function()
-              return package.loaded["nvim-navic"] and require("nvim-navic").is_available()
-            end,
-          })
-        end,
+        -- opts = function(_, opts)
+        --   opts.sections = opts.sections or {}
+        --   opts.sections.lualine_c = opts.sections.lualine_c or {}
+        --   table.insert(opts.sections.lualine_c, {
+        --     -- function()
+        --     --   return require("nvim-navic").get_location()
+        --     -- end,
+        --     -- cond = function()
+        --     --   return package.loaded["nvim-navic"] and require("nvim-navic").is_available()
+        --     -- end,
+        --     "navic",
+        --   })
+        -- end,
       },
     },
     init = function()

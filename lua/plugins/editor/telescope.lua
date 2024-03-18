@@ -17,6 +17,7 @@ return {
     keys = function()
       local builtin = require("telescope.builtin")
       local utils = require("telescope.utils")
+      local themes = require("telescope.themes")
 
       return {
         {
@@ -27,9 +28,9 @@ return {
           desc = "Find buffer",
         },
         {
-          "<leader>/",
+          "<leader>;",
           function()
-            builtin.current_buffer_fuzzy_find(require("telescope.themes").get_dropdown({ previewer = false }))
+            builtin.current_buffer_fuzzy_find(themes.get_dropdown({ previewer = false }))
           end,
           desc = "Fuzzy find in buffer",
         },
@@ -69,6 +70,7 @@ return {
       local actions = require("telescope.actions")
       return {
         defaults = {
+          prompt_prefix = "",
           initial_mode = "normal",
           sorting_strategy = "ascending",
           layout_config = {

@@ -1,3 +1,4 @@
+local custom = require("core.custom")
 return {
   -- vim.notify
   -- {
@@ -92,8 +93,8 @@ return {
         options = {
           try_as_border = true,
         },
-        -- symbol = "▏",
-        symbol = "│",
+        symbol = "▏",
+        -- symbol = "│",
       }
     end,
     init = function()
@@ -128,19 +129,33 @@ return {
     "nvim-lualine/lualine.nvim",
     event = "VeryLazy",
     dependencies = { "nvim-tree/nvim-web-devicons" },
-    opts = function(_, opts)
-      local sections = {
-        lualine_a = { "mode" },
-        lualine_b = { "branch", "diff", "diagnostics" },
-        lualine_c = { "filename" },
-        lualine_x = { "encoding", "fileformat", "filetype" },
-        lualine_y = { "progress" },
-        lualine_z = { "location" },
-      }
-      opts.sections = opts.sections or {}
-      vim.list_extend(sections.lualine_c, opts.sections.lualine_c or {})
-      opts.sections = sections
-    end,
+    opts = {
+      sections = {
+        lualine_a = { { "mode", icon = "" } },
+        lualine_b = { { "branch", icon = "" }, "diff", "diagnostics" },
+        lualine_c = { "filename", "navic" },
+        lualine_x = {
+          function()
+            local reg = vim.fn.reg_recording()
+            if reg == "" then
+              return ""
+            end
+            return "recording to " .. reg
+          end,
+          "searchcount",
+        },
+        lualine_y = { "encoding", "fileformat", "filetype" },
+        lualine_z = { "progress", "location" },
+      },
+      options = {
+        component_separators = { left = "", right = "" },
+        section_separators = { left = "", right = "" },
+        refresh = {
+          statusline = 100,
+        },
+      },
+      extensions = { "neo-tree", "lazy", "mason", "quickfix" },
+    },
   },
 
   -- incremental rename
@@ -155,6 +170,48 @@ return {
     "folke/todo-comments.nvim",
     dependencies = { "nvim-lua/plenary.nvim" },
     opts = {},
+  },
+
+  {
+    "luukvbaal/statuscol.nvim",
+    event = "VimEnter",
+    opts = function()
+      local builtin = require("statuscol.builtin")
+      return {
+        relculright = true,
+        setopt = true,
+        segments = {
+          { text = { builtin.foldfunc }, click = "v:lua.ScFa" },
+          {
+            sign = {
+              namespace = { "diagnostic" },
+              maxwidth = 1,
+              colwidth = 2,
+            },
+            click = "v:lua.ScSa",
+          },
+          {
+            sign = {
+              namespace = { "gitsigns" },
+              maxwidth = 1,
+              colwidth = 1,
+            },
+            click = "v:lua.ScSa",
+          },
+          { text = { " " } },
+          { text = { builtin.lnumfunc }, click = "v:lua.ScLa" },
+          { text = { " " } },
+        },
+        ft_ignore = {
+          "help",
+          "vim",
+          "alpha",
+          "dashboard",
+          "neo-tree",
+          "lazy",
+        },
+      }
+    end,
   },
 
   {

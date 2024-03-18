@@ -1,7 +1,7 @@
 local core_utils = require("core.utils")
 
 local setup_keymaps = function()
-  core_utils.autocmd("LspAttach", {
+  vim.api.nvim_create_autocmd("LspAttach", {
     group = core_utils.augroup("lsp_attach"),
     callback = function(event)
       local client = vim.lsp.get_client_by_id(event.data.client_id)
@@ -24,13 +24,23 @@ local setup_keymaps = function()
 
       register({
         K = { vim.lsp.buf.hover, "Hover" },
-        ["<c-k>"] = { vim.lsp.buf.signature_help, "Signature Help", mode = { "i" } },
+        ["<c-k>"] = {
+          function()
+            local cmp = require("cmp")
+            if cmp.visible() then
+              cmp.close()
+            end
+            vim.lsp.buf.signature_help()
+          end,
+          "Signature Help",
+          mode = { "n", "i" },
+        },
         ["<leader>"] = {
           l = {
             name = "lsp",
-            P = { gtp.close_all_win, "Close preview windows" },
             p = {
               name = "preview",
+              p = { gtp.close_all_win, "Close preview windows" },
               d = { gtp.goto_preview_definition, "Definition" },
               t = { gtp.goto_preview_type_definition, "Type Definition" },
               i = { gtp.goto_preview_implementation, "Implementation" },
@@ -55,7 +65,7 @@ local setup_keymaps = function()
               },
               E = { builtin.diagnostics, "Workspace Diagnostics" },
             },
-            k = { vim.lsp.buf.signature_help, "Signature Help" },
+            -- k = { vim.lsp.buf.signature_help, "Signature Help" },
             r = { lsp_rename, "Rename" },
             a = { vim.lsp.buf.code_action, "Code Action", mode = { "n", "v" } },
             A = {
@@ -116,6 +126,8 @@ return {
     opts = {},
     config = function(_, opts)
       local lspconfig = require("lspconfig")
+
+      require("lspconfig.ui.windows").default_options.border = "rounded"
 
       setup_keymaps()
 
@@ -235,6 +247,10 @@ return {
     cmd = "Mason",
     keys = { { "<leader>zm", "<cmd>Mason<cr>", desc = "Mason" } },
     build = ":MasonUpdate",
-    opts = {},
+    opts = {
+      ui = {
+        border = "rounded",
+      },
+    },
   },
 }
