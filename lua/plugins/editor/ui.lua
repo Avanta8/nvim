@@ -1,19 +1,41 @@
-return {
-  -- vim.notify
-  -- {
-  --   "j-hui/fidget.nvim",
-  --   opts = {},
-  -- },
+local custom = require("core.custom")
+local utils = require("core.utils")
 
+return {
   {
     "echasnovski/mini.notify",
     lazy = false,
-    opts = {},
+    opts = function()
+      return {
+        window = {
+          config = function()
+            local has_statusline = vim.o.laststatus > 0
+            local bottom_space = vim.o.cmdheight + (has_statusline and 1 or 0)
+            return { anchor = "SE", col = vim.o.columns, row = vim.o.lines - bottom_space }
+          end,
+        },
+      }
+    end,
     keys = {
       {
         "<leader>sn",
         function()
+          local win = utils.create_global_floating_win({
+            height = 0.8,
+            width = 0.8,
+          })
           require("mini.notify").show_history()
+
+          -- FIXME:
+          -- error if you open the history while it is already being displayed.
+
+          vim.api.nvim_set_option_value("modifiable", false, { buf = 0 })
+          vim.api.nvim_set_option_value("buflisted", false, { buf = 0 })
+          -- NOTE: If we set the buffer to unmodifiable, then we must set
+          -- bufhidden to unload, wipe or delete, otherwise notify will error if
+          -- we close then reopen the history.
+          vim.api.nvim_set_option_value("bufhidden", "wipe", { buf = 0 })
+          vim.api.nvim_set_option_value("winfixbuf", true, { win = win })
         end,
         desc = "Show notify",
       },
@@ -23,10 +45,12 @@ return {
       notify.setup(opts)
 
       vim.notify = notify.make_notify({
-        ERROR = { duration = 10000 },
-        WARN = { duration = 10000 },
-        INFO = { duration = 10000 },
-        DEBUG = { duration = 5000 },
+        ERROR = { duration = 5000 },
+        WARN = { duration = 5000 },
+        INFO = { duration = 5000 },
+        DEBUG = { duration = 3000 },
+        TRACE = { duration = 3000 },
+        OFF = { duration = 3000 },
       })
     end,
   },
@@ -48,8 +72,8 @@ return {
     event = { "BufReadPost", "BufWritePost", "BufNewFile" },
     opts = {
       indent = {
-        char = "│",
-        tab_char = "│",
+        char = "▏",
+        tab_char = "▏",
       },
       scope = { enabled = false },
       exclude = {
@@ -92,8 +116,8 @@ return {
         options = {
           try_as_border = true,
         },
-        -- symbol = "▏",
-        symbol = "│",
+        symbol = "▏",
+        -- symbol = "│",
       }
     end,
     init = function()
@@ -119,35 +143,35 @@ return {
   },
 
   {
-    enabled = false,
-    "briangwaltney/paren-hint.nvim",
-    opts = {},
-  },
-
-  {
     "nvim-lualine/lualine.nvim",
     event = "VeryLazy",
     dependencies = { "nvim-tree/nvim-web-devicons" },
-    opts = function(_, opts)
-      local sections = {
-        lualine_a = { "mode" },
-        lualine_b = { "branch", "diff", "diagnostics" },
-        lualine_c = { "filename" },
-        lualine_x = { "encoding", "fileformat", "filetype" },
-        lualine_y = { "progress" },
-        lualine_z = { "location" },
-      }
-      opts.sections = opts.sections or {}
-      vim.list_extend(sections.lualine_c, opts.sections.lualine_c or {})
-      opts.sections = sections
-    end,
-  },
-
-  -- incremental rename
-  {
-    "smjonas/inc-rename.nvim",
     opts = {
-      input_buffer_type = "dressing",
+      sections = {
+        lualine_a = { { "mode", icon = "" } },
+        lualine_b = { { "branch", icon = "" }, "diff", { "diagnostics", always_visible = true } },
+        lualine_c = { "filename", "navic" },
+        lualine_x = {
+          function()
+            local reg = vim.fn.reg_recording()
+            if reg == "" then
+              return ""
+            end
+            return "recording to " .. reg
+          end,
+          "searchcount",
+        },
+        lualine_y = { "encoding", "fileformat", "filetype" },
+        lualine_z = { "progress", "location" },
+      },
+      options = {
+        component_separators = { left = "", right = "" },
+        section_separators = { left = "", right = "" },
+        refresh = {
+          statusline = 100,
+        },
+      },
+      extensions = { "neo-tree", "lazy", "mason", "quickfix" },
     },
   },
 
@@ -155,6 +179,48 @@ return {
     "folke/todo-comments.nvim",
     dependencies = { "nvim-lua/plenary.nvim" },
     opts = {},
+  },
+
+  {
+    "luukvbaal/statuscol.nvim",
+    event = "VimEnter",
+    opts = function()
+      local builtin = require("statuscol.builtin")
+      return {
+        relculright = true,
+        setopt = true,
+        segments = {
+          { text = { builtin.foldfunc }, click = "v:lua.ScFa" },
+          {
+            sign = {
+              namespace = { "gitsigns" },
+              maxwidth = 1,
+              colwidth = 1,
+            },
+            click = "v:lua.ScSa",
+          },
+          {
+            sign = {
+              namespace = { "diagnostic" },
+              maxwidth = 1,
+              colwidth = 2,
+            },
+            click = "v:lua.ScSa",
+          },
+          { text = { " " } },
+          { text = { builtin.lnumfunc }, click = "v:lua.ScLa" },
+          { text = { " " } },
+        },
+        ft_ignore = {
+          "help",
+          "vim",
+          "alpha",
+          "dashboard",
+          "neo-tree",
+          "lazy",
+        },
+      }
+    end,
   },
 
   {

@@ -1,3 +1,8 @@
+local utils = require("core.utils")
+
+-- Quit all
+vim.keymap.set("n", "<leader>qq", "<CMD>qa<CR>", { desc = "Quit all" })
+
 -- Clear hlsearch
 vim.keymap.set("n", "<leader>h", "<cmd>noh<cr><esc>", { desc = "Clear hlsearch" })
 
@@ -5,8 +10,6 @@ vim.keymap.set("n", "<leader>h", "<cmd>noh<cr><esc>", { desc = "Clear hlsearch" 
 vim.keymap.set("n", "<c-_>", "gcc", { desc = "Comment line", remap = true })
 vim.keymap.set("v", "<c-_>", "gcgv", { desc = "Comment selection", remap = true })
 
--- Ctrl-bs to delete word
-vim.keymap.set("!", "<c-h>", "<c-w>")
 -- Ctrl-del to delete next word
 vim.keymap.set("i", "<c-del>", "<space><esc>ce")
 
@@ -24,25 +27,35 @@ vim.keymap.set("n", "q", "<nop>")
 vim.keymap.set("n", "gO", "<CMD>call append(line('.') - 1, repeat([''], v:count1))<CR>")
 vim.keymap.set("n", "go", "<CMD>call append(line('.'),     repeat([''], v:count1))<CR>")
 
--- Paste without overwriting unnamed register
-vim.keymap.set("x", "P", '"_dP')
-vim.keymap.set("x", "<leader>p", '"_dP')
-
 -- Paste from yank register
-vim.keymap.set("n", "<leader>p", '"0p')
-vim.keymap.set("n", "<leader>P", '"0P')
+vim.keymap.set({ "n", "x" }, "<leader>p", '"0p')
+vim.keymap.set({ "n", "x" }, "<leader>P", '"0P')
 
--- Delete without overwriting unnamed register.
+-- Delete without overwriting unnamed register
 vim.keymap.set({ "n", "x" }, "<leader>d", '"_d')
 vim.keymap.set({ "n", "x" }, "<leader>D", '"_D')
 
--- Change without overwriting unnamed register.
+-- Change without overwriting unnamed register
 vim.keymap.set({ "n", "x" }, "<leader>c", '"_c')
 vim.keymap.set({ "n", "x" }, "<leader>C", '"_C')
 
--- Delete char without overwriting unnamed register.
+-- Delete char without overwriting unnamed register
 vim.keymap.set({ "n", "x" }, "<leader>x", '"_x')
 vim.keymap.set({ "n", "x" }, "<leader>X", '"_X')
+
+-- Select line
+vim.keymap.set("n", "vv", "^vg_")
+
+-- ESC to close certain floating windows (eg. hover, diagnostics, gitsigns) and clear hlsearch
+vim.keymap.set("n", "<ESC>", function()
+  utils.close_lsp_floating_window()
+  utils.close_gitsigns_floating_windows()
+  vim.cmd.noh()
+
+  -- Now also simulate the acutal <ESC> keypress
+  local esc = vim.api.nvim_replace_termcodes("<ESC>", true, false, true)
+  vim.api.nvim_feedkeys(esc, "n", false)
+end)
 
 -- better up/down
 vim.keymap.set({ "n", "x" }, "j", "v:count == 0 ? 'gj' : 'j'", { expr = true, silent = true })
@@ -51,10 +64,43 @@ vim.keymap.set({ "n", "x" }, "k", "v:count == 0 ? 'gk' : 'k'", { expr = true, si
 vim.keymap.set({ "n", "x" }, "<Up>", "v:count == 0 ? 'gk' : 'k'", { expr = true, silent = true })
 
 -- Move to window using the <ctrl> hjkl keys
-vim.keymap.set("n", "<C-h>", "<C-w>h", { desc = "Go to left window", remap = true })
-vim.keymap.set("n", "<C-j>", "<C-w>j", { desc = "Go to lower window", remap = true })
-vim.keymap.set("n", "<C-k>", "<C-w>k", { desc = "Go to upper window", remap = true })
-vim.keymap.set("n", "<C-l>", "<C-w>l", { desc = "Go to right window", remap = true })
+-- vim.keymap.set("n", "<C-h>", "<C-w>h", { desc = "Go to left window", remap = true })
+-- vim.keymap.set("n", "<C-j>", "<C-w>j", { desc = "Go to lower window", remap = true })
+-- vim.keymap.set("n", "<C-k>", "<C-w>k", { desc = "Go to upper window", remap = true })
+-- vim.keymap.set("n", "<C-l>", "<C-w>l", { desc = "Go to right window", remap = true })
+
+-- Easier window <C-w> bindings
+vim.keymap.set("", "<leader>ww", "<C-w>w", { desc = "Switch Windows" })
+vim.keymap.set("", "<leader>wp", "<C-w>p", { desc = "Prev Window" })
+vim.keymap.set("", "<leader>wq", "<C-w>c", { desc = "Close Window" })
+
+vim.keymap.set("", "<leader>wh", "<C-w>h", { desc = "Go to Left Window" })
+vim.keymap.set("", "<leader>wj", "<C-w>j", { desc = "Go to Down Window" })
+vim.keymap.set("", "<leader>wk", "<C-w>k", { desc = "Go to Right Window" })
+vim.keymap.set("", "<leader>wl", "<C-w>l", { desc = "Go to Up Window" })
+
+vim.keymap.set("", "<leader>wH", "<C-w>H", { desc = "Move Window Left" })
+vim.keymap.set("", "<leader>wJ", "<C-w>J", { desc = "Move Window Down" })
+vim.keymap.set("", "<leader>wK", "<C-w>K", { desc = "Move Window Right" })
+vim.keymap.set("", "<leader>wL", "<C-w>L", { desc = "Move Window Up" })
+
+-- Replace windows
+-- stylua: ignore start
+vim.keymap.set("n", "<leader>wrh", function() utils.replace_win_dir("h") end, { desc = "Replace Window Left" })
+vim.keymap.set("n", "<leader>wrj", function() utils.replace_win_dir("j") end, { desc = "Replace Window Down" })
+vim.keymap.set("n", "<leader>wrk", function() utils.replace_win_dir("k") end, { desc = "Replace Window Up" })
+vim.keymap.set("n", "<leader>wrl", function() utils.replace_win_dir("l") end, { desc = "Replace Window Right" })
+
+-- Delete windows
+vim.keymap.set("n", "<leader>wdh", function() utils.del_win_dir("h") end, {desc = "Delete Window Left"})
+vim.keymap.set("n", "<leader>wdj", function() utils.del_win_dir("j") end, {desc = "Delete Window Down"})
+vim.keymap.set("n", "<leader>wdk", function() utils.del_win_dir("k") end, {desc = "Delete Window Up"})
+vim.keymap.set("n", "<leader>wdl", function() utils.del_win_dir("l") end, {desc = "Delete Window Right"})
+-- stylua: ignore end
+
+-- Easier start / end of line mappings
+vim.keymap.set("", "H", "^")
+vim.keymap.set("", "L", "$")
 
 -- Resize window using <ctrl> arrow keys
 vim.keymap.set("n", "<C-Up>", "<cmd>resize +2<cr>", { desc = "Increase window height" })
@@ -73,9 +119,6 @@ vim.keymap.set("i", "<A-j>", "<esc><cmd>m .+1<cr>==gi", { desc = "Move down" })
 vim.keymap.set("i", "<A-k>", "<esc><cmd>m .-2<cr>==gi", { desc = "Move up" })
 vim.keymap.set("v", "<A-j>", ":m '>+1<cr>gv=gv", { desc = "Move down" })
 vim.keymap.set("v", "<A-k>", ":m '<-2<cr>gv=gv", { desc = "Move up" })
-
--- Clear hlsearch with <esc>
--- vim.keymap.set({ "i", "n" }, "<esc>", "<cmd>noh<cr><esc>", { desc = "Escape and clear hlsearch" })
 
 -- Diagnostic
 vim.keymap.set("n", "[d", vim.diagnostic.goto_prev, { desc = "Go to previous diagnostic message" })

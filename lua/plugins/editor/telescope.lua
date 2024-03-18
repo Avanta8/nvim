@@ -17,6 +17,7 @@ return {
     keys = function()
       local builtin = require("telescope.builtin")
       local utils = require("telescope.utils")
+      local themes = require("telescope.themes")
 
       return {
         {
@@ -27,9 +28,9 @@ return {
           desc = "Find buffer",
         },
         {
-          "<leader>/",
+          "<leader>;",
           function()
-            builtin.current_buffer_fuzzy_find(require("telescope.themes").get_dropdown({ previewer = false }))
+            builtin.current_buffer_fuzzy_find(themes.get_dropdown({ previewer = false }))
           end,
           desc = "Fuzzy find in buffer",
         },
@@ -40,7 +41,7 @@ return {
         { "<leader>ff", builtin.find_files, desc = "Find file (cwd)" },
         { "<leader>fF", function() builtin.find_files({ cwd = utils.buffer_dir() }) end, desc = "Find file (buffer dir)" },
         { "<leader>fc", function() builtin.find_files({ cwd = vim.fn.stdpath("config") }) end, desc = "Find config" },
-        { "<leader>fl", builtin.oldfiles, desc = "Find recent files" },
+        { "<leader>fr", builtin.oldfiles, desc = "Find recent files" },
 
         -- search text
         { "<leader>jj", builtin.live_grep, desc = "Grep (cwd)" },
@@ -69,6 +70,7 @@ return {
       local actions = require("telescope.actions")
       return {
         defaults = {
+          prompt_prefix = "",
           initial_mode = "normal",
           sorting_strategy = "ascending",
           layout_config = {

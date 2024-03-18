@@ -65,15 +65,6 @@ return {
     end,
   },
 
-  -- Surround brackets: add, delete, change
-  {
-    enabled = false,
-    "kylechui/nvim-surround",
-    version = "*", -- Use for stability; omit to use `main` branch for the latest features
-    event = "VeryLazy",
-    opts = {},
-  },
-
   {
     "echasnovski/mini.surround",
     opts = {
@@ -97,7 +88,7 @@ return {
     event = "VeryLazy",
     opts = {
       label = {
-        -- uppercase = false,
+        uppercase = false,
         after = false,
         before = true,
       },
@@ -143,16 +134,17 @@ return {
         },
       },
     },
-    -- stylua: ignore
-    keys = {
-      -- { "<CR>", mode = { "n", "x", "o" }, function() require("flash").jump() end, desc = "Flash" },
-      -- { "<S-CR>", mode = { "n", "x", "o" }, function() require("flash").treesitter() end, desc = "Flash Treesitter" },
-      { ";", mode = { "n", "x", "o" }, function() require("flash").jump() end, desc = "Flash" },
-      { ",", mode = { "n", "x", "o" }, function() require("flash").treesitter() end, desc = "Flash Treesitter" },
-      { "r", mode = "o", function() require("flash").remote() end, desc = "Remote Flash" },
-      { "R", mode = { "o", "x" }, function() require("flash").treesitter_search() end, desc = "Treesitter Search" },
-      { "<c-s>", mode = { "c" }, function() require("flash").toggle() end, desc = "Toggle Flash Search" },
-    },
+    -- )stylua: ignore
+    keys = function()
+      local flash = require("flash")
+      return {
+        { ";", mode = { "n", "x", "o" }, flash.jump, desc = "Flash" },
+        { ",", mode = { "n", "x", "o" }, flash.treesitter, desc = "Flash Treesitter" },
+        { "r", mode = "o", flash.remote, desc = "Remote Flash" },
+        { "R", mode = { "o", "x" }, flash.treesitter_search, desc = "Treesitter Search" },
+        { "<c-s>", mode = { "c" }, flash.toggle, desc = "Toggle Flash Search" },
+      }
+    end,
     config = function(_, opts)
       require("flash").setup(opts)
       -- core_utils.autocmd("CmdwinEnter", {
@@ -352,7 +344,7 @@ return {
   },
 
   {
-    enabled = false,
+    -- enabled = false,
     "zbirenbaum/copilot.lua",
     cmd = "Copilot",
     build = ":Copilot auth",
