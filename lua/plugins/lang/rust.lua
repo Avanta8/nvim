@@ -1,27 +1,8 @@
 return {
-  {
-    "nvim-treesitter/nvim-treesitter",
+  require("core.lang_setup").create_config({
+    install = { "rust_analyzer" },
+  }),
 
-    opts = function(_, opts)
-      opts.ensure_installed = opts.ensure_installed or {}
-      vim.list_extend(opts.ensure_installed, { "rust", "ron", "toml" })
-    end,
-  },
-  {
-    "neovim/nvim-lspconfig",
-    opts = {
-      servers = {
-        -- To ensure that Rust Analyzer is installed by mason, but we don't
-        -- want it to get autosetup.
-        --
-        -- It will get setup by rustaceanvim
-        rust_analyzer = {
-          setup = false,
-        },
-        taplo = {},
-      },
-    },
-  },
   {
     "mrcjkb/rustaceanvim",
     version = "^4", -- Recommended

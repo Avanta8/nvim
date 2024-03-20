@@ -231,16 +231,18 @@ return {
       -- This is because lazy (due to using vim.tbl_deep_extend) doesn't merge lists
       -- properly (it overwrites instead). Therefore, we use a slightly different format
       -- and then convert into the expected format for mason-tool-installer.
+      --
+      -- NOTE: nvm: changed for now.
       ensure_installed = {},
     },
-    config = function(_, opts)
-      local ensure = vim.deepcopy(opts.ensure_installed)
-      for name, s_opts in pairs(opts.ensure_installed) do
-        ensure[#ensure + 1] = vim.tbl_extend("error", { name }, s_opts)
-      end
-      opts.ensure_installed = ensure
-      require("mason-tool-installer").setup(opts)
-    end,
+    -- config = function(_, opts)
+    --   local ensure = vim.deepcopy(opts.ensure_installed)
+    --   for name, s_opts in pairs(opts.ensure_installed) do
+    --     ensure[#ensure + 1] = vim.tbl_extend("error", { name }, s_opts)
+    --   end
+    --   opts.ensure_installed = ensure
+    --   require("mason-tool-installer").setup(opts)
+    -- end,
   },
   {
     "williamboman/mason.nvim",

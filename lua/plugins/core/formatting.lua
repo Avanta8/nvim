@@ -16,16 +16,14 @@ return {
       },
     },
     opts = {
-      notify_on_error = false,
+      -- notify_on_error = false,
       format_on_save = {
         lsp_fallback = true,
         timeout_ms = 500,
       },
     },
-    config = function(_, opts)
+    init = function()
       local conform = require("conform")
-      conform.setup(opts)
-
       vim.api.nvim_create_user_command("Format", function(args)
         local range = nil
 
