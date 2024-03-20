@@ -41,7 +41,7 @@ return {
         { "<leader>ff", builtin.find_files, desc = "Find file (cwd)" },
         { "<leader>fF", function() builtin.find_files({ cwd = utils.buffer_dir() }) end, desc = "Find file (buffer dir)" },
         { "<leader>fc", function() builtin.find_files({ cwd = vim.fn.stdpath("config") }) end, desc = "Find config" },
-        { "<leader>fl", builtin.oldfiles, desc = "Find recent files" },
+        { "<leader>fr", builtin.oldfiles, desc = "Find recent files" },
 
         -- search text
         { "<leader>jj", builtin.live_grep, desc = "Grep (cwd)" },

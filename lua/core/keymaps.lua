@@ -86,15 +86,21 @@ vim.keymap.set("", "<leader>wL", "<C-w>L", { desc = "Move Window Up" })
 
 -- Replace windows
 -- stylua: ignore start
-vim.keymap.set("n", "<leader>w<C-l>", function() utils.replace_win("L") end, { desc = "Replace Window Right" })
-vim.keymap.set("n", "<leader>w<C-h>", function() utils.replace_win("H") end, { desc = "Replace Window Left" })
-vim.keymap.set("n", "<leader>w<C-j>", function() utils.replace_win("J") end, { desc = "Replace Window Down" })
-vim.keymap.set("n", "<leader>w<C-k>", function() utils.replace_win("K") end, { desc = "Replace Window Up" })
+vim.keymap.set("n", "<leader>wrh", function() utils.replace_win_dir("h") end, { desc = "Replace Window Left" })
+vim.keymap.set("n", "<leader>wrj", function() utils.replace_win_dir("j") end, { desc = "Replace Window Down" })
+vim.keymap.set("n", "<leader>wrk", function() utils.replace_win_dir("k") end, { desc = "Replace Window Up" })
+vim.keymap.set("n", "<leader>wrl", function() utils.replace_win_dir("l") end, { desc = "Replace Window Right" })
+
+-- Delete windows
+vim.keymap.set("n", "<leader>wdh", function() utils.del_win_dir("h") end, {desc = "Delete Window Left"})
+vim.keymap.set("n", "<leader>wdj", function() utils.del_win_dir("j") end, {desc = "Delete Window Down"})
+vim.keymap.set("n", "<leader>wdk", function() utils.del_win_dir("k") end, {desc = "Delete Window Up"})
+vim.keymap.set("n", "<leader>wdl", function() utils.del_win_dir("l") end, {desc = "Delete Window Right"})
 -- stylua: ignore end
 
 -- Easier start / end of line mappings
-vim.keymap.set("", "<C-l>", "$")
-vim.keymap.set("", "<C-h>", "^")
+vim.keymap.set("", "H", "^")
+vim.keymap.set("", "L", "$")
 
 -- Resize window using <ctrl> arrow keys
 vim.keymap.set("n", "<C-Up>", "<cmd>resize +2<cr>", { desc = "Increase window height" })

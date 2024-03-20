@@ -65,15 +65,6 @@ return {
     end,
   },
 
-  -- Surround brackets: add, delete, change
-  {
-    enabled = false,
-    "kylechui/nvim-surround",
-    version = "*", -- Use for stability; omit to use `main` branch for the latest features
-    event = "VeryLazy",
-    opts = {},
-  },
-
   {
     "echasnovski/mini.surround",
     opts = {

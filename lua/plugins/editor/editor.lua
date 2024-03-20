@@ -1,8 +1,10 @@
 local core_utils = require("core.utils")
 local custom = require("core.custom")
+local utils = require("core.utils")
 
 return {
   {
+    enabled = false,
     "akinsho/bufferline.nvim",
     event = "VeryLazy",
     lazy = false,
@@ -14,8 +16,6 @@ return {
       { "<leader>bH", "<Cmd>BufferLineCloseLeft<CR>", desc = "Delete buffers to the left" },
       { "<leader>bl", "<CMD>BufferLineCycleNext<CR>", desc = "Next buffer" },
       { "<leader>bh", "<CMD>BufferLineCyclePrev<CR>", desc = "Prev buffer" },
-      -- { "<S-h>", "<cmd>BufferLineCyclePrev<cr>", desc = "Prev buffer" },
-      -- { "<S-l>", "<cmd>BufferLineCycleNext<cr>", desc = "Next buffer" },
       { "[b", "<cmd>BufferLineCyclePrev<cr>", desc = "Prev buffer" },
       { "]b", "<cmd>BufferLineCycleNext<cr>", desc = "Next buffer" },
     },
@@ -96,7 +96,18 @@ return {
   {
     "b0o/incline.nvim",
     event = "VeryLazy",
+    keys = {
+      {
+        "<leader>r",
+        function()
+          vim.notify("refresh", vim.log.levels.INFO)
+          require("incline").refresh()
+        end,
+        desc = "Refresh incline",
+      },
+    },
     opts = {
+      debounce_threshold = 100,
       window = {
         padding = 0,
         margin = { horizontal = 0, vertical = 0 },
@@ -107,6 +118,156 @@ return {
           vertical = "top",
         },
       },
+      ignore = {
+        -- floating_wins = false,
+        unlisted_buffers = false,
+        -- buftypes = function()
+        --   return false
+        -- end,
+        -- wintypes = function()
+        --   return false
+        -- end,
+        filetypes = { "dashboard" },
+      },
+
+      render = function(props)
+        -- vim.g.count = (vim.g.count or 0) + 1
+        -- print(vim.g.count)
+        local colors = require("catppuccin.palettes.macchiato")
+
+        local buf = props.buf
+        local win = props.win
+        local focused = props.focused
+        local modified = vim.bo[props.buf].modified
+
+        local function start_sec()
+          return {
+            { "▌  ", guifg = colors.mantle },
+          }
+        end
+
+        local function diagnostics_sec()
+          local function get_diagnostic_count(severity)
+            return #vim.diagnostic.get(props.buf, { severity = vim.diagnostic.severity[severity:upper()] })
+          end
+          local icons = require("core.custom").icons.diagnostics
+          local errors = get_diagnostic_count("ERROR")
+          local warnings = get_diagnostic_count("WARN")
+          local error_text = (errors > 0 and icons.Error .. errors or "")
+          local warnings_text = (warnings > 0 and icons.Warn .. warnings or "")
+          -- text = vim.trim(text)
+
+          local error_sec = { error_text, group = "DiagnosticSignError" }
+          local warnings_sec = { warnings_text, group = "DiagnosticSignWarn" }
+          local count = (errors > 0 and 1 or 0) + (warnings > 0 and 1 or 0)
+
+          return {
+            error_sec,
+            { count > 1 and " " or "" },
+
+            warnings_sec,
+            { count > 0 and " " or "" },
+          }
+        end
+
+        local function name_sec()
+          local filename = vim.fn.fnamemodify(vim.api.nvim_buf_get_name(buf), ":t")
+          if filename == "" then
+            filename = "[No Name]"
+          end
+
+          local file_icon, file_color = require("nvim-web-devicons").get_icon_color(filename)
+
+          local text_style = ""
+          if focused then
+            text_style = (text_style ~= "" and (text_style .. ",") or "") .. "bold"
+          end
+          if modified then
+            text_style = (text_style ~= "" and (text_style .. ",") or "") .. "italic"
+          end
+          text_style = text_style or "None"
+
+          -- vim.print(text_style)
+          return {
+            { file_icon, guifg = file_color },
+            { " " },
+            { filename, gui = text_style },
+          }
+        end
+
+        local function modified_sec()
+          local text = "   "
+          if modified then
+            text = " ● "
+          end
+          return {
+            {
+              text,
+              guifg = colors.green,
+            },
+          }
+        end
+
+        local function end_sec()
+          return {
+            { "▐", guifg = colors.mantle },
+          }
+        end
+
+        local text_color = focused and colors.rosewater or colors.overlay2
+
+        return {
+          start_sec(),
+          diagnostics_sec(),
+          name_sec(),
+          modified_sec(),
+          end_sec(),
+          guifg = text_color,
+          guibg = colors.crust,
+        }
+      end,
+
+      -- render = function(props)
+      --   local function get_diagnostic_label(props)
+      --     local icons = {
+      --       Error = "",
+      --       Warn = "",
+      --       Info = "",
+      --       Hint = "",
+      --     }
+      --
+      --     local label = {}
+      --     for severity, icon in pairs(icons) do
+      --       local n = #vim.diagnostic.get(props.buf, { severity = vim.diagnostic.severity[string.upper(severity)] })
+      --       if n > 0 then
+      --         table.insert(label, { icon .. " " .. n .. " ", group = "DiagnosticSign" .. severity })
+      --       end
+      --     end
+      --     return label
+      --   end
+      --
+      --   local bufname = vim.api.nvim_buf_get_name(props.buf)
+      --   local filename = vim.fn.fnamemodify(bufname, ":t")
+      --   local diagnostics = get_diagnostic_label(props)
+      --   local modified = vim.api.nvim_buf_get_option(props.buf, "modified") and "bold,italic" or "None"
+      --   local filetype_icon, color = require("nvim-web-devicons").get_icon_color(filename)
+      --   local colors = require("catppuccin.palettes.macchiato")
+      --
+      --   local buffer = {
+      --     { filetype_icon, guifg = color },
+      --     { " " },
+      --     { filename, gui = modified },
+      --   }
+      --
+      --   if #diagnostics > 0 then
+      --     table.insert(diagnostics, { "| ", guifg = "grey" })
+      --   end
+      --   for _, buffer_ in ipairs(buffer) do
+      --     table.insert(diagnostics, buffer_)
+      --   end
+      --   return diagnostics
+      -- end,
+
       -- render = function(props)
       --   local helpers = require("incline.helpers")
       --   local devicons = require("nvim-web-devicons")
@@ -124,56 +285,70 @@ return {
       --     guibg = "#44406e",
       --   }
       -- end,
-      render = function(props)
-        local helpers = require("incline.helpers")
-        local navic = require("nvim-navic")
-        local devicons = require("nvim-web-devicons")
-        local filename = vim.fn.fnamemodify(vim.api.nvim_buf_get_name(props.buf), ":t")
-        if filename == "" then
-          filename = "[No Name]"
-        end
-        local ft_icon, ft_color = devicons.get_icon_color(filename)
-        local modified = vim.bo[props.buf].modified
 
-        local create_navic_context = function()
-          local context = {}
-          local data = navic.get_data(props.buf) or {}
-          for i, item in ipairs(data) do
-            table.insert(context, {
-              { item.icon, group = "NavicIcons" .. item.type },
-              { item.name, group = "NavicText" },
-            })
-            if i < #data then
-              context[#context + 1] = { " > ", group = "NavicSeparator" }
-            end
-          end
-          return context
-        end
-
-        local filename_section = {
-          { filename, gui = modified and "bold,italic" or "bold" },
-          " ",
-          ft_icon and { " ", ft_icon, " ", guibg = ft_color, guifg = helpers.contrast_color(ft_color) } or "",
-        }
-
-        local res = {
-          guibg = "#282642",
-          " ",
-        }
-
-        if props.focused then
-          local context = create_navic_context()
-          if #context > 0 then
-            res[#res + 1] = context
-            res[#res + 1] = " │ "
-          end
-        end
-
-        res[#res + 1] = filename_section
-
-        return res
-      end,
+      -- render = function(props)
+      --   local helpers = require("incline.helpers")
+      --   local navic = require("nvim-navic")
+      --   local devicons = require("nvim-web-devicons")
+      --   local filename = vim.fn.fnamemodify(vim.api.nvim_buf_get_name(props.buf), ":t")
+      --   if filename == "" then
+      --     filename = "[No Name]"
+      --   end
+      --   local ft_icon, ft_color = devicons.get_icon_color(filename)
+      --   local modified = vim.bo[props.buf].modified
+      --
+      --   local create_navic_context = function()
+      --     local context = {}
+      --     local data = navic.get_data(props.buf) or {}
+      --     for i, item in ipairs(data) do
+      --       table.insert(context, {
+      --         { item.icon, group = "NavicIcons" .. item.type },
+      --         { item.name, group = "NavicText" },
+      --       })
+      --       if i < #data then
+      --         context[#context + 1] = { " > ", group = "NavicSeparator" }
+      --       end
+      --     end
+      --     return context
+      --   end
+      --
+      --   local filename_section = {
+      --     { filename, gui = modified and "bold,italic" or "bold" },
+      --     " ",
+      --     ft_icon and { " ", ft_icon, " ", guibg = ft_color, guifg = helpers.contrast_color(ft_color) } or "",
+      --   }
+      --
+      --   local res = {
+      --     guibg = "#282642",
+      --     " ",
+      --   }
+      --
+      --   if props.focused then
+      --     local context = create_navic_context()
+      --     if #context > 0 then
+      --       res[#res + 1] = context
+      --       res[#res + 1] = " │ "
+      --     end
+      --   end
+      --
+      --   res[#res + 1] = filename_section
+      --
+      --   return res
+      -- end,
     },
+    init = function()
+      local incline = require("incline")
+      -- By default, incline will not fully redraw under an OptionSet event. Even though
+      -- a buffer may change from hidden to unhidden and so it should start to get rendered.
+      -- Therefore here we manually trigger complete refresh.
+      vim.api.nvim_create_autocmd({ "OptionSet" }, {
+        group = utils.augroup("incline"),
+        -- pattern = "buflisted",
+        callback = function(event)
+          incline.refresh()
+        end,
+      })
+    end,
   },
 
   {
@@ -191,7 +366,7 @@ return {
         -- Reveal the current file, or if in an unsaved file, the current working directory.
         -- Taken from help docs
         {
-          "<leader>fr",
+          "<leader>fs",
           function()
             local reveal_file = vim.fn.expand("%:p")
             if reveal_file == "" then
@@ -212,7 +387,7 @@ return {
           desc = "Reveal file",
         },
         {
-          "<leader>e",
+          "<leader>fe",
           function()
             command.execute({ dir = vim.loop.cwd() })
           end,
@@ -223,7 +398,7 @@ return {
           function()
             command.execute({ toggle = true, dir = vim.loop.cwd() })
           end,
-          desc = "File explorer (cwd) (toogle)",
+          desc = "File explorer (cwd) (toggle)",
         },
         {
           "<leader>ge",
@@ -349,17 +524,9 @@ return {
   },
 
   {
+    enabled = false,
     "m4xshen/hardtime.nvim",
     dependencies = { "MunifTanjim/nui.nvim", "nvim-lua/plenary.nvim" },
-    opts = {},
-  },
-
-  {
-    "stevearc/oil.nvim",
-    dependencies = { "nvim-tree/nvim-web-devicons" },
-    keys = {
-      { "<leader>fo", "<CMD>Oil<CR>", desc = "Oil" },
-    },
     opts = {},
   },
 
@@ -505,5 +672,24 @@ return {
         icons = custom.icons.kinds,
       }
     end,
+  },
+
+  {
+    enabled = false,
+    "artemave/workspace-diagnostics.nvim",
+    event = "LspAttach",
+    dependencies = {
+      "neovim/nvim-lspconfig",
+    },
+    init = function()
+      vim.api.nvim_create_autocmd("LspAttach", {
+        group = core_utils.augroup("workspace-diagnostics_attach"),
+        callback = function(event)
+          local client = vim.lsp.get_client_by_id(event.data.client_id)
+          require("workspace-diagnostics").populate_workspace_diagnostics(client, event.buf)
+        end,
+      })
+    end,
+    opts = {},
   },
 }

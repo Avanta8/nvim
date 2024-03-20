@@ -50,15 +50,20 @@ function M.is_floating_window(win_id)
   return config.relative ~= "" or config.external
 end
 
-local opposite = { L = "h", H = "l", J = "k", K = "j" }
-local key_ctrl_w = vim.api.nvim_replace_termcodes("<C-w>", true, false, true)
-function M.replace_win(char)
-  -- local keys = vim.api.nvim_replace_termcodes("<C-w>L", true, false, true)
-  -- vim.api.nvim_feedkeys(keys, "n", false)
+local opposite = { l = "h", h = "l", j = "k", k = "j" }
 
-  -- NOTE: For some reason, if I use feedkeys (above), then it doesn't work.
-  -- I have do to it like this
-  vim.cmd("normal " .. key_ctrl_w .. char)
+function M.del_win_dir(char)
+  local win_id = vim.api.nvim_get_current_win()
+
+  vim.cmd("wincmd " .. char)
+  if vim.api.nvim_get_current_win() ~= win_id then
+    vim.cmd.close()
+    vim.api.nvim_set_current_win(win_id)
+  end
+end
+
+function M.replace_win_dir(char)
+  vim.cmd("wincmd " .. char:upper())
 
   local op = opposite[char]
   local replace_win = vim.fn.win_getid(vim.fn.winnr(op))
@@ -113,6 +118,45 @@ function M.sfoo()
   vim.api.nvim_win_set_cursor(target_win, cursor)
   -- vim.api.nvim_win_set_cursor(0, cursor) -- NOTE: If I put `target_win` instead of 0, then it breaks. Acutally maybe not
   -- vim.fn.winrestview(winview)
+end
+
+function M.create_global_floating_win(opts)
+  -- local ui = vim.api.nvim_list_uis()[1]
+  -- local editor_width = ui.width
+  -- local editor_height = ui.height
+
+  local editor_width = vim.o.columns
+  local editor_height = vim.o.lines
+
+  local float_width = opts.width
+  local float_height = opts.height
+
+  if float_width < 1 then
+    float_width = editor_width * float_width
+  end
+
+  if float_height < 1 then
+    float_height = editor_height * float_height
+  end
+
+  local col = (editor_width - float_width) / 2
+  local row = (editor_height - float_height) / 2
+
+  local config = {
+    relative = "editor",
+    border = "rounded",
+    anchor = "NW",
+    height = math.floor(float_height),
+    width = math.floor(float_width),
+    col = col,
+    row = row,
+  }
+
+  local buf = vim.api.nvim_create_buf(false, true)
+  vim.api.nvim_set_option_value("modifiable", false, { buf = buf })
+  local win = vim.api.nvim_open_win(buf, true, config)
+  vim.api.nvim_set_current_win(win)
+  return win
 end
 
 ---@param name string
