@@ -110,9 +110,15 @@ return {
       debounce_threshold = 100,
       window = {
         padding = 0,
-        margin = { horizontal = 0, vertical = 0 },
+        margin = {
+          horizontal = {
+            left = 40,
+            right = 0,
+          },
+          vertical = 1,
+        },
         placement = {
-          horizontal = "right",
+          horizontal = "center",
           -- horizontal = "left",
           -- vertical = "bottom",
           vertical = "top",
@@ -140,16 +146,24 @@ return {
         local focused = props.focused
         local modified = vim.bo[props.buf].modified
 
+        local function get_diagnostic_count(severity)
+          return #vim.diagnostic.get(props.buf, { severity = vim.diagnostic.severity[severity:upper()] })
+        end
+
         local function start_sec()
+          local group = "DiagnosticSignOk"
+          for _, severity in ipairs({ "Error", "Warn", "Hint", "Info" }) do
+            if get_diagnostic_count(severity) > 0 then
+              group = "DiagnosticSign" .. severity
+              break
+            end
+          end
           return {
-            { "▌  ", guifg = colors.mantle },
+            { "▌ ", group = group },
           }
         end
 
         local function diagnostics_sec()
-          local function get_diagnostic_count(severity)
-            return #vim.diagnostic.get(props.buf, { severity = vim.diagnostic.severity[severity:upper()] })
-          end
           local icons = require("core.custom").icons.diagnostics
           local errors = get_diagnostic_count("ERROR")
           local warnings = get_diagnostic_count("WARN")
@@ -187,7 +201,6 @@ return {
           end
           text_style = text_style or "None"
 
-          -- vim.print(text_style)
           return {
             { file_icon, guifg = file_color },
             { " " },
@@ -210,7 +223,7 @@ return {
 
         local function end_sec()
           return {
-            { "▐", guifg = colors.mantle },
+            { " ▐", guifg = colors.green },
           }
         end
 
@@ -218,10 +231,10 @@ return {
 
         return {
           start_sec(),
-          diagnostics_sec(),
+          -- diagnostics_sec(),
           name_sec(),
           modified_sec(),
-          end_sec(),
+          -- end_sec(),
           guifg = text_color,
           guibg = colors.crust,
         }
@@ -352,6 +365,7 @@ return {
   },
 
   {
+    enabled = false,
     "nvim-neo-tree/neo-tree.nvim",
     branch = "v3.x",
     dependencies = {
@@ -485,13 +499,13 @@ return {
       map("[[", "prev")
 
       -- also set it after loading ftplugins, since a lot overwrite [[ and ]]
-      vim.api.nvim_create_autocmd("FileType", {
-        callback = function()
-          local buffer = vim.api.nvim_get_current_buf()
-          map("]]", "next", buffer)
-          map("[[", "prev", buffer)
-        end,
-      })
+      -- vim.api.nvim_create_autocmd("FileType", {
+      --   callback = function()
+      --     local buffer = vim.api.nvim_get_current_buf()
+      --     map("]]", "next", buffer)
+      --     map("[[", "prev", buffer)
+      --   end,
+      -- })
     end,
     keys = {
       { "]]", desc = "Next Reference" },
