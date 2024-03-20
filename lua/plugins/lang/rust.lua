@@ -1,6 +1,9 @@
 return {
   require("core.lang_setup").create_config({
     install = { "rust_analyzer" },
+    rust_analyzer = {
+      setup = false,
+    },
   }),
 
   {
