@@ -149,7 +149,28 @@ return {
     opts = {
       sections = {
         lualine_a = { { "mode", icon = "" } },
-        lualine_b = { { "branch", icon = "" }, "diff", { "diagnostics", always_visible = true } },
+        lualine_b = {
+          { "branch", icon = "" },
+          {
+            "diagnostics",
+            always_visible = true,
+            sections = { "hint", "info", "warn", "error" },
+            symbols = {
+              error = custom.icons.diagnostics.Error,
+              warn = custom.icons.diagnostics.Warn,
+              info = custom.icons.diagnostics.Info,
+              hint = custom.icons.diagnostics.Hint,
+            },
+          },
+          {
+            "diff",
+            symbols = {
+              added = custom.icons.git.added,
+              modified = custom.icons.git.modified,
+              removed = custom.icons.git.removed,
+            },
+          },
+        },
         lualine_c = { "filename", "navic" },
         lualine_x = {
           function()
@@ -163,6 +184,11 @@ return {
         },
         lualine_y = { "encoding", "fileformat", "filetype" },
         lualine_z = { "progress", "location" },
+      },
+      -- HACK: I need this section here: (lualine_a with buffers).
+      -- Othersize, lualine is bugged with cmdheight=0 and sometimes disappears.
+      tabline = {
+        -- lualine_a = { "buffers" },
       },
       options = {
         component_separators = { left = "", right = "" },
