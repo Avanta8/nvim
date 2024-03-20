@@ -11,6 +11,8 @@ return {
         end
       end,
     },
-    pyright = {},
+    basedpyright = {
+      mason = false,
+    },
   }),
 }
