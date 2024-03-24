@@ -2,11 +2,33 @@ local custom = require("core.custom")
 local utils = require("core.utils")
 
 return {
+
+  {
+    "uga-rosa/ccc.nvim",
+    event = "VeryLazy",
+    opts = {
+      highlighter = {
+        auto_enable = true,
+        lsp = true,
+      },
+    },
+  },
+
   {
     "echasnovski/mini.notify",
     lazy = false,
     opts = function()
       return {
+        content = {
+          -- Most recent notification at bottom
+          sort = function(notif_arr)
+            local res = vim.deepcopy(notif_arr)
+            table.sort(res, function(a, b)
+              return a.ts_update < b.ts_update
+            end)
+            return res
+          end,
+        },
         window = {
           config = function()
             local has_statusline = vim.o.laststatus > 0
@@ -58,7 +80,6 @@ return {
   -- Nice UI for pickers. eg, code actions
   {
     "stevearc/dressing.nvim",
-    lazy = true,
     opts = {
       input = {
         insert_only = false,
@@ -143,110 +164,9 @@ return {
   },
 
   {
-    "nvim-lualine/lualine.nvim",
-    event = "VeryLazy",
-    dependencies = { "nvim-tree/nvim-web-devicons" },
-    opts = {
-      sections = {
-        lualine_a = { { "mode", icon = "" } },
-        lualine_b = {
-          { "branch", icon = "" },
-          {
-            "diagnostics",
-            always_visible = true,
-            sections = { "hint", "info", "warn", "error" },
-            symbols = {
-              error = custom.icons.diagnostics.Error,
-              warn = custom.icons.diagnostics.Warn,
-              info = custom.icons.diagnostics.Info,
-              hint = custom.icons.diagnostics.Hint,
-            },
-          },
-          {
-            "diff",
-            symbols = {
-              added = custom.icons.git.added,
-              modified = custom.icons.git.modified,
-              removed = custom.icons.git.removed,
-            },
-          },
-        },
-        lualine_c = { "filename", "navic" },
-        lualine_x = {
-          function()
-            local reg = vim.fn.reg_recording()
-            if reg == "" then
-              return ""
-            end
-            return "recording to " .. reg
-          end,
-          "searchcount",
-        },
-        lualine_y = { "encoding", "fileformat", "filetype" },
-        lualine_z = { "progress", "location" },
-      },
-      -- HACK: I need this section here: (lualine_a with buffers).
-      -- Othersize, lualine is bugged with cmdheight=0 and sometimes disappears.
-      tabline = {
-        -- lualine_a = { "buffers" },
-      },
-      options = {
-        component_separators = { left = "", right = "" },
-        section_separators = { left = "", right = "" },
-        refresh = {
-          statusline = 100,
-        },
-      },
-      extensions = { "neo-tree", "lazy", "mason", "quickfix" },
-    },
-  },
-
-  {
     "folke/todo-comments.nvim",
     dependencies = { "nvim-lua/plenary.nvim" },
     opts = {},
-  },
-
-  {
-    "luukvbaal/statuscol.nvim",
-    event = "VimEnter",
-    opts = function()
-      local builtin = require("statuscol.builtin")
-      return {
-        relculright = true,
-        setopt = true,
-        segments = {
-          { text = { builtin.foldfunc }, click = "v:lua.ScFa" },
-          {
-            sign = {
-              namespace = { "gitsigns" },
-              maxwidth = 1,
-              colwidth = 1,
-            },
-            click = "v:lua.ScSa",
-          },
-          {
-            sign = {
-              namespace = { "diagnostic" },
-              maxwidth = 1,
-              colwidth = 2,
-            },
-            click = "v:lua.ScSa",
-          },
-          { text = { " " } },
-          { text = { builtin.lnumfunc }, click = "v:lua.ScLa" },
-          { text = { " " } },
-        },
-        ft_ignore = {
-          "help",
-          "vim",
-          "alpha",
-          "dashboard",
-          "neo-tree",
-          "lazy",
-        },
-      }
-    end,
   },
 
   {
@@ -271,11 +191,11 @@ return {
         -- stylua: ignore
         center = {
           { action = "Telescope find_files",                                     desc = " Find file",       icon = " ", key = "f" },
-          { action = "ene | startinsert",                                        desc = " New file",        icon = " ", key = "n" },
+          { action = "ene",                                                      desc = " New file",        icon = " ", key = "n" },
           { action = "Telescope oldfiles",                                       desc = " Recent files",    icon = " ", key = "r" },
-          { action = "Telescope live_grep",                                      desc = " Find text",       icon = " ", key = "g" },
+          { action = "Telescope live_grep",                                      desc = " Find text",       icon = " ", key = "j" },
           { action = 'lua require("persistence").load()',                        desc = " Restore Session", icon = " ", key = "s" },
-          { action = "Lazy",                                                     desc = " Lazy",            icon = "󰒲 ", key = "l" },
+          { action = "Lazy",                                                     desc = " Lazy",            icon = "󰒲 ", key = "p" },
           { action = "qa",                                                       desc = " Quit",            icon = " ", key = "q" },
         },
           footer = function()

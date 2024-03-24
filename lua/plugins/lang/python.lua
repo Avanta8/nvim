@@ -1,7 +1,7 @@
 return {
   require("core.lang_setup").create_config({
     ruff_lsp = {
-      mason = false,
+      -- mason = false,
       on_attach = function(client, bufnr)
         if client.name == "ruff_lsp" then
           -- Disable hover in favor of Pyright
@@ -12,7 +12,7 @@ return {
       end,
     },
     basedpyright = {
-      mason = false,
+      -- mason = false,
     },
   }),
 }

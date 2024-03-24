@@ -1,8 +1,8 @@
-local core_utils = require("core.utils")
+local utils = require("core.utils")
 
 local setup_keymaps = function()
   vim.api.nvim_create_autocmd("LspAttach", {
-    group = core_utils.augroup("lsp_attach"),
+    group = utils.augroup("lsp_attach"),
     callback = function(event)
       local client = vim.lsp.get_client_by_id(event.data.client_id)
       local register = require("which-key").register
@@ -12,7 +12,7 @@ local setup_keymaps = function()
 
       local lsp_rename = vim.lsp.buf.rename
       -- NOTE: disable this for now
-      if false and core_utils.has_plugin("inc-rename.nvim") then
+      if false and utils.has_plugin("inc-rename.nvim") then
         local inc_rename = require("inc_rename")
         -- kinda jank way of doing this, but we need to simulate the user actually typeing these keys.
         lsp_rename = function()
@@ -74,6 +74,8 @@ local setup_keymaps = function()
               end,
               "Source action",
             },
+          },
+          t = {
             h = {
               function()
                 if vim.lsp.inlay_hint == nil then
@@ -117,7 +119,17 @@ return {
       -- NOTE: neodev must be setup before lspconfig (nvim-lspconfig)
       -- I think that putting it as a dependency mandates that it is setup before this
       -- plugin but not 100% sure.
-      { "folke/neodev.nvim", opts = {} },
+      {
+        "folke/neodev.nvim",
+        opts = {
+          library = {
+            enabled = true,
+            runtime = true,
+            types = true,
+            plugins = false,
+          },
+        },
+      },
     },
     keys = {
       { "<leader>zl", "<cmd>LspInfo<cr>", desc = "Lsp Info" },

@@ -1,3 +1,5 @@
+local utils = require("core.utils")
+
 local has_words_before = function()
   unpack = unpack or table.unpack
   local line, col = unpack(vim.api.nvim_win_get_cursor(0))
@@ -13,7 +15,7 @@ return {
   { -- Autocompletion
     "hrsh7th/nvim-cmp",
     version = false,
-    -- event = "InsertEnter",
+    event = "InsertEnter",
     dependencies = {
       -- Snippet Engine & its associated nvim-cmp source
       {
@@ -35,6 +37,53 @@ return {
           end
           return "make install_jsregexp"
         end)(),
+        opts = function()
+          local types = require("luasnip.util.types")
+          local ext_opt = {
+            virt_text = { { "│", "Visual" } },
+            virt_text_pos = "inline",
+          }
+          return {
+            -- Display a cursor-like placeholder in unvisited nodes
+            -- of the snippet.
+            ext_opts = {
+              [types.insertNode] = {
+                unvisited = ext_opt,
+              },
+              [types.exitNode] = {
+                unvisited = ext_opt,
+              },
+            },
+          }
+        end,
+        config = function(_, opts)
+          local luasnip = require("luasnip")
+
+          luasnip.setup(opts)
+
+          -- Use <C-c> to select a choice in a snippet.
+          vim.keymap.set({ "i", "s" }, "<C-c>", function()
+            if luasnip.choice_active() then
+              require("luasnip.extras.select_choice")()
+            end
+          end, { desc = "Select choice" })
+
+          vim.api.nvim_create_autocmd("ModeChanged", {
+            group = utils.augroup("cancel_snippet"),
+            desc = "Cancel the snippet session when leaving insert mode",
+            pattern = { "s:n", "i:*" },
+            callback = function(args)
+              if
+                luasnip.session
+                and luasnip.session.current_nodes[args.buf]
+                and not luasnip.session.jump_active
+                and not luasnip.choice_active()
+              then
+                luasnip.unlink_current()
+              end
+            end,
+          })
+        end,
       },
       {
         "zbirenbaum/copilot-cmp",
@@ -46,7 +95,7 @@ return {
       "hrsh7th/cmp-buffer",
       "hrsh7th/cmp-path",
     },
-    opts = function(_, opts)
+    opts = function()
       local luasnip = require("luasnip")
       local cmp = require("cmp")
       local types = require("cmp.types")
@@ -63,7 +112,7 @@ return {
         return modified_priority[kind] or kind
       end
 
-      local M = {
+      return {
         snippet = {
           expand = function(args)
             luasnip.lsp_expand(args.body)
@@ -157,46 +206,30 @@ return {
         -- },
 
         mapping = {
-          ["<Up>"] = cmp.mapping.select_prev_item({ behavior = cmp.SelectBehavior.Select }),
-          ["<Down>"] = cmp.mapping.select_next_item({ behavior = cmp.SelectBehavior.Select }),
-          ["<C-p>"] = cmp.mapping.select_prev_item({ behavior = cmp.SelectBehavior.Insert }),
-          ["<C-n>"] = cmp.mapping.select_next_item({ behavior = cmp.SelectBehavior.Insert }),
           ["<C-u>"] = cmp.mapping(cmp.mapping.scroll_docs(-4), { "i", "c" }),
           ["<C-d>"] = cmp.mapping(cmp.mapping.scroll_docs(4), { "i", "c" }),
+
           ["<C-Space>"] = cmp.mapping(cmp.mapping.complete(), { "i", "c" }),
-          ["<C-e>"] = cmp.mapping({ i = cmp.mapping.abort(), c = cmp.mapping.close() }),
-          ["<C-y>"] = cmp.mapping.confirm({ select = true }),
+
+          ["<C-g>"] = cmp.mapping({ i = cmp.mapping.abort(), c = cmp.mapping.close() }),
+          ["<C-e>"] = cmp.mapping.confirm({ select = true }),
           ["<CR>"] = cmp.mapping.confirm({ select = false }),
 
-          ["<Tab>"] = cmp.mapping(function(fallback)
-            if cmp.visible() then
-              cmp.select_next_item()
-            -- You could replace the expand_or_jumpable() calls with expand_or_locally_jumpable()
-            -- this way you will only jump inside the snippet region
-            elseif luasnip.expand_or_locally_jumpable() then
-              luasnip.expand_or_jump()
-            elseif has_words_before() then
-              cmp.complete()
-            else
-              fallback()
+          ["<Tab>"] = cmp.mapping.select_next_item({ behavior = cmp.SelectBehavior.Insert }),
+          ["<S-Tab>"] = cmp.mapping.select_prev_item({ behavior = cmp.SelectBehavior.Insert }),
+
+          ["<C-h>"] = cmp.mapping(function()
+            if luasnip.jumpable(-1) then -- These ifs are unnecessary
+              luasnip.jump(-1)
             end
           end, { "i", "s" }),
-
-          ["<S-Tab>"] = cmp.mapping(function(fallback)
-            if cmp.visible() then
-              cmp.select_prev_item()
-            elseif luasnip.jumpable(-1) then
-              luasnip.jump(-1)
-            else
-              fallback()
+          ["<C-l>"] = cmp.mapping(function()
+            if luasnip.expand_or_locally_jumpable() then
+              luasnip.expand_or_jump()
             end
           end, { "i", "s" }),
         },
       }
-
-      -- NOTE: Do no allow overwriting of opts
-      M = vim.tbl_deep_extend("error", M, opts)
-      return M
     end,
   },
 }

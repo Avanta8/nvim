@@ -10,13 +10,14 @@ return {
         ["["] = { name = "+prev" },
         ["<leader><tab>"] = { name = "+tabs" },
         ["<leader>b"] = { name = "+buffers" },
-        -- ["<leader>l"] = { name = "+code" },  -- done in lsp mapping
         ["<leader>f"] = { name = "+file" },
         ["<leader>g"] = { name = "+git" },
         ["<leader>gh"] = { name = "+hunks" },
+        -- ["<leader>l"] = { name = "+code" },  -- done in lsp mapping
         ["<leader>q"] = { name = "+quit/session" },
         ["<leader>j"] = { name = "+find text" },
         ["<leader>s"] = { name = "+search" },
+        ["<leader>t"] = { name = "+toggle" },
         ["<leader>w"] = { name = "+windows" },
         ["<leader>z"] = { name = "+managers" },
       },

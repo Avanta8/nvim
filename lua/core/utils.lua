@@ -159,6 +159,69 @@ function M.create_global_floating_win(opts)
   return win
 end
 
+-- function M.user_pick_window(opts)
+--   local default_opts = {
+--     -- hint = "floating-big-letter",
+--     picker_config = {
+--       statusline_winbar_picker = {
+--         use_winbar = "smart",
+--       },
+--     },
+--     show_prompt = false,
+--     filter_rules = {
+--       include_current_win = true,
+--       autoselect_one = false,
+--       bo = {
+--         buftype = { "nofile", "nowrite", "prompt" },
+--       },
+--     },
+--   }
+--   opts = vim.tbl_deep_extend("force", default_opts, opts or {})
+--   return require("window-picker").pick_window(opts)
+-- end
+--
+-- function M.user_replace_window()
+--   local source = M.user_pick_window()
+--   if source == nil then
+--     return
+--   end
+--
+--   local target = M.user_pick_window()
+--   if target == nil then
+--     return
+--   end
+--
+--   bufyank.replace_window(source, target)
+-- end
+--
+-- function M.user_duplicate_window()
+--   local source = M.user_pick_window()
+--   if source == nil then
+--     return
+--   end
+--
+--   local target = M.user_pick_window()
+--   if target == nil then
+--     return
+--   end
+--
+--   bufyank.duplicate_window(source, target)
+-- end
+--
+-- function M.user_swap_windows()
+--   local winid1 = M.user_pick_window()
+--   if winid1 == nil then
+--     return
+--   end
+--
+--   local winid2 = M.user_pick_window()
+--   if winid2 == nil then
+--     return
+--   end
+--
+--   bufyank.swap_windows(winid1, winid2)
+-- end
+
 ---@param name string
 ---@param fn fun(name:string)
 function M.on_load(name, fn)

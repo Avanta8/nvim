@@ -1,4 +1,16 @@
 local utils = require("core.utils")
+local bufyank = require("extras.bufyank")
+
+-- vim.api.nvim_create_user_command("Pick", function()
+--   local win_id = require("window-picker").pick_window({
+--     -- filter_rules = {
+--     --   bo = {
+--     --     buftype = { "nofile" },
+--     --   },
+--     -- },
+--   })
+--   vim.notify(tostring(win_id))
+-- end, {})
 
 -- Quit all
 vim.keymap.set("n", "<leader>qq", "<CMD>qa<CR>", { desc = "Quit all" })
@@ -14,7 +26,7 @@ vim.keymap.set("v", "<c-_>", "gcgv", { desc = "Comment selection", remap = true 
 vim.keymap.set("i", "<c-del>", "<space><esc>ce")
 
 -- Lazy info
-vim.keymap.set("n", "<leader>zz", "<cmd>Lazy<cr>", { desc = "Lazy" })
+vim.keymap.set("n", "<leader>zp", "<cmd>Lazy<cr>", { desc = "Lazy" })
 
 -- Remap for visual block mode
 vim.keymap.set("n", "<leader>v", "<c-v>")
@@ -70,26 +82,35 @@ vim.keymap.set({ "n", "x" }, "<Up>", "v:count == 0 ? 'gk' : 'k'", { expr = true,
 -- vim.keymap.set("n", "<C-l>", "<C-w>l", { desc = "Go to right window", remap = true })
 
 -- Easier window <C-w> bindings
-vim.keymap.set("", "<leader>ww", "<C-w>w", { desc = "Switch Windows" })
-vim.keymap.set("", "<leader>wp", "<C-w>p", { desc = "Prev Window" })
-vim.keymap.set("", "<leader>wq", "<C-w>c", { desc = "Close Window" })
-
-vim.keymap.set("", "<leader>wh", "<C-w>h", { desc = "Go to Left Window" })
-vim.keymap.set("", "<leader>wj", "<C-w>j", { desc = "Go to Down Window" })
-vim.keymap.set("", "<leader>wk", "<C-w>k", { desc = "Go to Right Window" })
-vim.keymap.set("", "<leader>wl", "<C-w>l", { desc = "Go to Up Window" })
-
-vim.keymap.set("", "<leader>wH", "<C-w>H", { desc = "Move Window Left" })
-vim.keymap.set("", "<leader>wJ", "<C-w>J", { desc = "Move Window Down" })
-vim.keymap.set("", "<leader>wK", "<C-w>K", { desc = "Move Window Right" })
-vim.keymap.set("", "<leader>wL", "<C-w>L", { desc = "Move Window Up" })
+-- vim.keymap.set("", "<leader>ww", "<C-w>w", { desc = "Switch Windows" })
+-- vim.keymap.set("", "<leader>wp", "<C-w>p", { desc = "Prev Window" })
+-- vim.keymap.set("", "<leader>wq", "<C-w>c", { desc = "Close Window" })
+--
+-- vim.keymap.set("", "<leader>wh", "<C-w>h", { desc = "Go to Left Window" })
+-- vim.keymap.set("", "<leader>wj", "<C-w>j", { desc = "Go to Down Window" })
+-- vim.keymap.set("", "<leader>wk", "<C-w>k", { desc = "Go to Right Window" })
+-- vim.keymap.set("", "<leader>wl", "<C-w>l", { desc = "Go to Up Window" })
+--
+-- vim.keymap.set("", "<leader>wH", "<C-w>H", { desc = "Move Window Left" })
+-- vim.keymap.set("", "<leader>wJ", "<C-w>J", { desc = "Move Window Down" })
+-- vim.keymap.set("", "<leader>wK", "<C-w>K", { desc = "Move Window Right" })
+-- vim.keymap.set("", "<leader>wL", "<C-w>L", { desc = "Move Window Up" })
 
 -- Replace windows
 -- stylua: ignore start
-vim.keymap.set("n", "<leader>wrh", function() utils.replace_win_dir("h") end, { desc = "Replace Window Left" })
-vim.keymap.set("n", "<leader>wrj", function() utils.replace_win_dir("j") end, { desc = "Replace Window Down" })
-vim.keymap.set("n", "<leader>wrk", function() utils.replace_win_dir("k") end, { desc = "Replace Window Up" })
-vim.keymap.set("n", "<leader>wrl", function() utils.replace_win_dir("l") end, { desc = "Replace Window Right" })
+-- vim.keymap.set("n", "<leader>wrh", function() utils.replace_win_dir("h") end, { desc = "Replace Window Left" })
+-- vim.keymap.set("n", "<leader>wrj", function() utils.replace_win_dir("j") end, { desc = "Replace Window Down" })
+-- vim.keymap.set("n", "<leader>wrk", function() utils.replace_win_dir("k") end, { desc = "Replace Window Up" })
+-- vim.keymap.set("n", "<leader>wrl", function() utils.replace_win_dir("l") end, { desc = "Replace Window Right" })
+
+-- Jump to window with count, or previous window without count
+vim.keymap.set("n", "\\", function()
+  if vim.v.count > 0 then
+    vim.cmd.wincmd(tostring(vim.v.count) .. " w")
+  else
+    vim.cmd.wincmd("p")
+  end
+end)
 
 -- Delete windows
 vim.keymap.set("n", "<leader>wdh", function() utils.del_win_dir("h") end, {desc = "Delete Window Left"})
@@ -99,8 +120,8 @@ vim.keymap.set("n", "<leader>wdl", function() utils.del_win_dir("l") end, {desc 
 -- stylua: ignore end
 
 -- Easier start / end of line mappings
-vim.keymap.set("", "H", "^")
-vim.keymap.set("", "L", "$")
+vim.keymap.set("", "gh", "^")
+vim.keymap.set("", "gl", "$")
 
 -- Resize window using <ctrl> arrow keys
 vim.keymap.set("n", "<C-Up>", "<cmd>resize +2<cr>", { desc = "Increase window height" })
@@ -148,3 +169,10 @@ vim.keymap.set("n", "<leader><tab>n", "<cmd>tabnew<cr>", { desc = "New Tab" })
 vim.keymap.set("n", "<leader><tab>]", "<cmd>tabnext<cr>", { desc = "Next Tab" })
 vim.keymap.set("n", "<leader><tab>d", "<cmd>tabclose<cr>", { desc = "Close Tab" })
 vim.keymap.set("n", "<leader><tab>[", "<cmd>tabprevious<cr>", { desc = "Previous Tab" })
+
+-- vim.keymap.set("n", "<leader>by", bufyank.copy_buf, { desc = "Yank buffer" })
+-- vim.keymap.set("n", "<leader>bp", bufyank.paste_buf, { desc = "Put buffer" })
+--
+-- vim.keymap.set("n", "<leader>wus", utils.user_swap_windows, { desc = "Swap windows" })
+-- vim.keymap.set("n", "<leader>wud", utils.user_duplicate_window, { desc = "Duplicate window" })
+-- vim.keymap.set("n", "<leader>wur", utils.user_replace_window, { desc = "Replace window" })

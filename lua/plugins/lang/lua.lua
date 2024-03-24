@@ -10,8 +10,9 @@ return require("core.lang_setup").create_config({
           enable = true,
         },
         completion = {
-          callSnippet = "Replace",
+          -- callSnippet = "Replace",
           -- callSnippet = "Both",
+          callSnippet = "Disable",
         },
         diagnostics = {
           -- testing

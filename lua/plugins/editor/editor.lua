@@ -1,4 +1,3 @@
-local core_utils = require("core.utils")
 local custom = require("core.custom")
 local utils = require("core.utils")
 
@@ -7,6 +6,23 @@ return {
   {
     "rmagatti/goto-preview",
     opts = {},
+  },
+
+  {
+    "dnlhc/glance.nvim",
+    opts = {
+      -- preview_win_opts = {
+      --   relative = "win",
+      -- },
+      border = {
+        enable = true,
+      },
+      theme = {
+        enable = true,
+        mode = "brighten",
+        -- mode = "darken",
+      },
+    },
   },
 
   {
@@ -38,129 +54,6 @@ return {
   {
     "Aasim-A/scrollEOF.nvim",
     opts = {},
-  },
-
-  -- Show file name top right
-  {
-    "b0o/incline.nvim",
-    event = "VeryLazy",
-    keys = {
-      {
-        "<leader>r",
-        function()
-          vim.notify("refresh", vim.log.levels.INFO)
-          require("incline").refresh()
-        end,
-        desc = "Refresh incline",
-      },
-    },
-    opts = {
-      debounce_threshold = 100,
-      window = {
-        padding = 0,
-        margin = {
-          horizontal = {
-            left = 40,
-            right = 0,
-          },
-          vertical = 1,
-        },
-        placement = {
-          horizontal = "center",
-          vertical = "top",
-        },
-      },
-      ignore = {
-        unlisted_buffers = false,
-        filetypes = { "dashboard" },
-      },
-
-      render = function(props)
-        local colors = require("catppuccin.palettes.macchiato")
-
-        local buf = props.buf
-        local win = props.win
-        local focused = props.focused
-        local modified = vim.bo[props.buf].modified
-
-        local function get_diagnostic_count(severity)
-          return #vim.diagnostic.get(props.buf, { severity = vim.diagnostic.severity[severity:upper()] })
-        end
-
-        local function diagnostic_sec()
-          local group = "DiagnosticSignOk"
-          for _, severity in ipairs({ "Error", "Warn", "Hint", "Info" }) do
-            if get_diagnostic_count(severity) > 0 then
-              group = "DiagnosticSign" .. severity
-              break
-            end
-          end
-          return {
-            { "▌ ", group = group },
-          }
-        end
-
-        local function name_sec()
-          local filename = vim.fn.fnamemodify(vim.api.nvim_buf_get_name(buf), ":t")
-          if filename == "" then
-            filename = "[No Name]"
-          end
-
-          local file_icon, file_color = require("nvim-web-devicons").get_icon_color(filename)
-
-          local text_style = ""
-          if focused then
-            text_style = (text_style ~= "" and (text_style .. ",") or "") .. "bold"
-          end
-          if modified then
-            text_style = (text_style ~= "" and (text_style .. ",") or "") .. "italic"
-          end
-          text_style = text_style or "None"
-
-          return {
-            { file_icon, guifg = file_color },
-            { " " },
-            { filename, gui = text_style },
-          }
-        end
-
-        local function modified_sec()
-          local text = "   "
-          if modified then
-            text = " ● "
-          end
-          return {
-            {
-              text,
-              guifg = colors.green,
-            },
-          }
-        end
-
-        local text_color = focused and colors.rosewater or colors.overlay2
-
-        return {
-          diagnostic_sec(),
-          name_sec(),
-          modified_sec(),
-          guifg = text_color,
-          guibg = colors.crust,
-        }
-      end,
-    },
-    init = function()
-      local incline = require("incline")
-      -- By default, incline will not fully redraw under an OptionSet event. Even though
-      -- a buffer may change from hidden to unhidden and so it should start to get rendered.
-      -- Therefore here we manually trigger complete refresh.
-      vim.api.nvim_create_autocmd({ "OptionSet" }, {
-        group = utils.augroup("incline"),
-        -- pattern = "buflisted",
-        callback = function(event)
-          incline.refresh()
-        end,
-      })
-    end,
   },
 
   -- Peek line numbers
@@ -222,12 +115,22 @@ return {
 
   -- Point to lsp diagnostics
   {
+    -- enabled = false,
     "https://git.sr.ht/~whynothugo/lsp_lines.nvim",
     event = "LspAttach",
-    keys = {
-      -- stylua: ignore
-      { "<leader>lj", function() vim.notify("Toggled lsp lines") require("lsp_lines").toggle() end, desc = "Toggle diagnostics lines" },
-    },
+    keys = function()
+      return {
+        {
+          "<leader>te",
+          function()
+            require("lsp_lines").toggle()
+            local enabled = vim.diagnostic.config(nil).virtual_lines
+            vim.notify("Lsp lines " .. (enabled and "enabled" or "disabled"))
+          end,
+          desc = "Toggle diagnostics lines",
+        },
+      }
+    end,
     init = function()
       -- Initially start with diagnostic disabled. Manually toggle it on when needed.
       vim.diagnostic.config({ virtual_lines = false })
@@ -239,9 +142,40 @@ return {
   {
     "dgagn/diagflow.nvim",
     event = "LspAttach",
+    keys = {
+      {
+        "<leader>td",
+
+        function()
+          vim.g.diagflow_enabled = not vim.g.diagflow_enabled
+          vim.notify("Diagflow " .. (vim.g.diagflow_enabled and "enabled" or "disabled"), vim.log.levels.INFO)
+
+          if vim.g.diagflow_enabled then
+            -- Hack is required to make diagflow update
+            vim.api.nvim_exec_autocmds("CursorMoved", {})
+          else
+            -- Remove all the current diagnostic highlights.
+            local ns = vim.api.nvim_get_namespaces().DiagnosticsHighlight
+            for _, buf in ipairs(vim.api.nvim_list_bufs()) do
+              if vim.api.nvim_buf_is_valid(buf) then
+                vim.api.nvim_buf_clear_namespace(buf, ns, 0, -1)
+              end
+            end
+          end
+        end,
+
+        desc = "Toggle diagflow",
+      },
+    },
     opts = {
       scope = "line",
+      enable = function()
+        return vim.g.diagflow_enabled
+      end,
     },
+    init = function()
+      vim.g.diagflow_enabled = true
+    end,
   },
 
   {
@@ -324,7 +258,7 @@ return {
     },
     init = function()
       vim.api.nvim_create_autocmd("LspAttach", {
-        group = core_utils.augroup("navic_lsp_attach"),
+        group = utils.augroup("navic_lsp_attach"),
         callback = function(event)
           local navic = require("nvim-navic")
           local client = vim.lsp.get_client_by_id(event.data.client_id)
@@ -350,7 +284,7 @@ return {
     },
     init = function()
       vim.api.nvim_create_autocmd("LspAttach", {
-        group = core_utils.augroup("navbuddy_lsp_attach"),
+        group = utils.augroup("navbuddy_lsp_attach"),
         callback = function(event)
           local navbuddy = require("nvim-navbuddy")
           local client = vim.lsp.get_client_by_id(event.data.client_id)
@@ -381,13 +315,19 @@ return {
     },
     init = function()
       vim.api.nvim_create_autocmd("LspAttach", {
-        group = core_utils.augroup("workspace-diagnostics_attach"),
+        group = utils.augroup("workspace-diagnostics_attach"),
         callback = function(event)
           local client = vim.lsp.get_client_by_id(event.data.client_id)
           require("workspace-diagnostics").populate_workspace_diagnostics(client, event.buf)
         end,
       })
     end,
+    opts = {},
+  },
+
+  {
+    "folke/trouble.nvim",
+    branch = "dev",
     opts = {},
   },
 }

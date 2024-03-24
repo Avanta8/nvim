@@ -87,6 +87,7 @@ return {
     "folke/flash.nvim",
     event = "VeryLazy",
     opts = {
+      labels = "jfkdls;ahgieurowmv,c.xpq/z",
       label = {
         uppercase = false,
         after = false,
@@ -282,6 +283,18 @@ return {
       { "<leader>ie", "<cmd>IMoveWith<cr>", desc = "Move current node" },
       { "<leader>ij", "<cmd>IMoveNode<cr>", desc = "Move chosen node" },
     },
+  },
+
+  -- Split / join code blocks
+  {
+    "Wansmer/treesj",
+    opts = {},
+    keys = { { "gs", "<CMD>TSJToggle<CR>" } },
+  },
+
+  {
+    "echasnovski/mini.misc",
+    opts = {},
   },
 
   -- jumplist
