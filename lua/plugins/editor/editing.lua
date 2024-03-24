@@ -87,6 +87,7 @@ return {
     "folke/flash.nvim",
     event = "VeryLazy",
     opts = {
+      labels = "jfkdls;ahgieurowmv,c.xpq/z",
       label = {
         uppercase = false,
         after = false,

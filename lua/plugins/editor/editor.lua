@@ -1,4 +1,3 @@
-local core_utils = require("core.utils")
 local custom = require("core.custom")
 local utils = require("core.utils")
 
@@ -7,6 +6,23 @@ return {
   {
     "rmagatti/goto-preview",
     opts = {},
+  },
+
+  {
+    "dnlhc/glance.nvim",
+    opts = {
+      -- preview_win_opts = {
+      --   relative = "win",
+      -- },
+      border = {
+        enable = true,
+      },
+      theme = {
+        enable = true,
+        mode = "brighten",
+        -- mode = "darken",
+      },
+    },
   },
 
   {
@@ -324,7 +340,7 @@ return {
     },
     init = function()
       vim.api.nvim_create_autocmd("LspAttach", {
-        group = core_utils.augroup("navic_lsp_attach"),
+        group = utils.augroup("navic_lsp_attach"),
         callback = function(event)
           local navic = require("nvim-navic")
           local client = vim.lsp.get_client_by_id(event.data.client_id)
@@ -350,7 +366,7 @@ return {
     },
     init = function()
       vim.api.nvim_create_autocmd("LspAttach", {
-        group = core_utils.augroup("navbuddy_lsp_attach"),
+        group = utils.augroup("navbuddy_lsp_attach"),
         callback = function(event)
           local navbuddy = require("nvim-navbuddy")
           local client = vim.lsp.get_client_by_id(event.data.client_id)
@@ -381,7 +397,7 @@ return {
     },
     init = function()
       vim.api.nvim_create_autocmd("LspAttach", {
-        group = core_utils.augroup("workspace-diagnostics_attach"),
+        group = utils.augroup("workspace-diagnostics_attach"),
         callback = function(event)
           local client = vim.lsp.get_client_by_id(event.data.client_id)
           require("workspace-diagnostics").populate_workspace_diagnostics(client, event.buf)

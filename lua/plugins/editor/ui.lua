@@ -2,11 +2,33 @@ local custom = require("core.custom")
 local utils = require("core.utils")
 
 return {
+
+  {
+    "uga-rosa/ccc.nvim",
+    event = "VeryLazy",
+    opts = {
+      highlighter = {
+        auto_enable = true,
+        lsp = true,
+      },
+    },
+  },
+
   {
     "echasnovski/mini.notify",
     lazy = false,
     opts = function()
       return {
+        content = {
+          -- Most recent notification at bottom
+          sort = function(notif_arr)
+            local res = vim.deepcopy(notif_arr)
+            table.sort(res, function(a, b)
+              return a.ts_update < b.ts_update
+            end)
+            return res
+          end,
+        },
         window = {
           config = function()
             local has_statusline = vim.o.laststatus > 0
@@ -58,7 +80,6 @@ return {
   -- Nice UI for pickers. eg, code actions
   {
     "stevearc/dressing.nvim",
-    lazy = true,
     opts = {
       input = {
         insert_only = false,
@@ -271,11 +292,11 @@ return {
         -- stylua: ignore
         center = {
           { action = "Telescope find_files",                                     desc = " Find file",       icon = " ", key = "f" },
-          { action = "ene | startinsert",                                        desc = " New file",        icon = " ", key = "n" },
+          { action = "ene",                                                      desc = " New file",        icon = " ", key = "n" },
           { action = "Telescope oldfiles",                                       desc = " Recent files",    icon = " ", key = "r" },
-          { action = "Telescope live_grep",                                      desc = " Find text",       icon = " ", key = "g" },
+          { action = "Telescope live_grep",                                      desc = " Find text",       icon = " ", key = "j" },
           { action = 'lua require("persistence").load()',                        desc = " Restore Session", icon = " ", key = "s" },
-          { action = "Lazy",                                                     desc = " Lazy",            icon = "󰒲 ", key = "l" },
+          { action = "Lazy",                                                     desc = " Lazy",            icon = "󰒲 ", key = "p" },
           { action = "qa",                                                       desc = " Quit",            icon = " ", key = "q" },
         },
           footer = function()

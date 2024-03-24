@@ -1,4 +1,5 @@
 local core_utils = require("core.utils")
+
 return {
   {
     "nvim-telescope/telescope.nvim",
@@ -64,6 +65,36 @@ return {
         { "<leader>so", builtin.vim_options, desc = "Options" },
         { "<leader>sz", function() builtin.colorscheme({ enable_preview = true }) end, desc = "Pick colorscheme" },
         -- stylua: ignore end
+
+        {
+          "<leader>fp",
+          function()
+            builtin.find_files({ cwd = require("lazy.core.config").options.root })
+          end,
+          desc = "Find Plugin File",
+        },
+        {
+          "<leader>jp",
+          function()
+            local files = {} ---@type table<string, string>
+            for _, plugin in pairs(require("lazy.core.config").plugins) do
+              repeat
+                if plugin._.module then
+                  local info = vim.loader.find(plugin._.module)[1]
+                  if info then
+                    files[info.modpath] = info.modpath
+                  end
+                end
+                plugin = plugin._.super
+              until not plugin
+            end
+            builtin.live_grep({
+              default_text = "/",
+              search_dirs = vim.tbl_values(files),
+            })
+          end,
+          desc = "Find Lazy Plugin Spec",
+        },
       }
     end,
     opts = function()
