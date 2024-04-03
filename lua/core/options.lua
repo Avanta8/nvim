@@ -1,7 +1,7 @@
 vim.g.mapleader = " "
 vim.g.maplocalleader = " "
 
-vim.g.enable_inlay_hint = false
+vim.g.enable_inlay_hint = true
 
 -- local opt = vim.opt
 --
@@ -33,6 +33,7 @@ vim.opt.scrolloff = 4 -- Lines of context
 vim.opt.shiftwidth = 4 -- Size of an indent
 -- opt.shortmess:append({ W = true, I = true, c = true, C = true })
 vim.opt.showmode = false -- Dont show mode since we have a statusline
+vim.opt.showtabline = 2 -- Always show tabline
 vim.opt.sidescrolloff = 8 -- Columns of context
 vim.opt.signcolumn = "yes" -- Always show the signcolumn, otherwise it would shift the text each time
 vim.opt.smartcase = true -- Don't ignore case with capitals

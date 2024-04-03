@@ -14,7 +14,6 @@ local border_opts = {
 return {
   { -- Autocompletion
     "hrsh7th/nvim-cmp",
-    version = false,
     event = "InsertEnter",
     dependencies = {
       -- Snippet Engine & its associated nvim-cmp source
@@ -90,6 +89,10 @@ return {
         dependencies = { "zbirenbaum/copilot.lua" },
         opts = {},
       },
+      {
+        "zjp-CN/nvim-cmp-lsp-rs",
+        opts = {},
+      },
       "saadparwaiz1/cmp_luasnip",
       "hrsh7th/cmp-nvim-lsp",
       "hrsh7th/cmp-buffer",
@@ -99,6 +102,8 @@ return {
       local luasnip = require("luasnip")
       local cmp = require("cmp")
       local types = require("cmp.types")
+      local cmp_lsp_rs = require("cmp_lsp_rs")
+      local comparators = cmp_lsp_rs.comparators
 
       ---@type table<integer, integer>
       local modified_priority = {
@@ -133,48 +138,59 @@ return {
         experimental = {
           ghost_text = false,
         },
+        view = {
+          entries = {
+            follow_cursor = true,
+          },
+        },
         window = {
           completion = cmp.config.window.bordered(border_opts),
           documentation = cmp.config.window.bordered(border_opts),
         },
         sources = cmp.config.sources({
-          { name = "nvim_lsp", priority = 1000 },
-          { name = "luasnip", priority = 750 },
+          { name = "nvim_lsp" },
+          { name = "luasnip" },
           -- { name = "copilot", priority = 500 },
-          { name = "buffer", priority = 500 },
-          { name = "path", priority = 250 },
+          { name = "buffer" },
+          { name = "path" },
           { name = "emoji" },
         }),
         -- https://github.com/pysan3/dotfiles/blob/9d3ca30baecefaa2a6453d8d6d448d62b5614ff2/nvim/lua/plugins/70-nvim-cmp.lua#L132-L162
         sorting = {
           -- https://github.com/hrsh7th/nvim-cmp/blob/main/lua/cmp/config/compare.lua
+          -- comparators = {
+          --   cmp.config.compare.offset,
+          --   cmp.config.compare.exact,
+          --   function(entry1, entry2) -- sort by length ignoring "=~"
+          --     local len1 = string.len(string.gsub(entry1.completion_item.label, "[=~()_]", ""))
+          --     local len2 = string.len(string.gsub(entry2.completion_item.label, "[=~()_]", ""))
+          --     if len1 ~= len2 then
+          --       return len1 - len2 < 0
+          --     end
+          --   end,
+          --   cmp.config.compare.recently_used,
+          --   function(entry1, entry2) -- sort by cmp.config.compare kind (Variable, Function etc)
+          --     local kind1 = modified_kind(entry1:get_kind())
+          --     local kind2 = modified_kind(entry2:get_kind())
+          --     if kind1 ~= kind2 then
+          --       return kind1 - kind2 < 0
+          --     end
+          --   end,
+          --   function(entry1, entry2) -- score by lsp, if available
+          --     local t1 = entry1.completion_item.sortText
+          --     local t2 = entry2.completion_item.sortText
+          --     if t1 ~= nil and t2 ~= nil and t1 ~= t2 then
+          --       return t1 < t2
+          --     end
+          --   end,
+          --   cmp.config.compare.score,
+          --   cmp.config.compare.order,
+          -- },
           comparators = {
-            cmp.config.compare.offset,
-            cmp.config.compare.exact,
-            function(entry1, entry2) -- sort by length ignoring "=~"
-              local len1 = string.len(string.gsub(entry1.completion_item.label, "[=~()_]", ""))
-              local len2 = string.len(string.gsub(entry2.completion_item.label, "[=~()_]", ""))
-              if len1 ~= len2 then
-                return len1 - len2 < 0
-              end
-            end,
-            cmp.config.compare.recently_used,
-            function(entry1, entry2) -- sort by cmp.config.compare kind (Variable, Function etc)
-              local kind1 = modified_kind(entry1:get_kind())
-              local kind2 = modified_kind(entry2:get_kind())
-              if kind1 ~= kind2 then
-                return kind1 - kind2 < 0
-              end
-            end,
-            function(entry1, entry2) -- score by lsp, if available
-              local t1 = entry1.completion_item.sortText
-              local t2 = entry2.completion_item.sortText
-              if t1 ~= nil and t2 ~= nil and t1 ~= t2 then
-                return t1 < t2
-              end
-            end,
-            cmp.config.compare.score,
-            cmp.config.compare.order,
+            cmp.config.compare.sort_text,
+            comparators.inscope_inherent_import,
+            -- cmp.config.compare.scopes,
+            -- cmp.config.compare.kind,
           },
         },
         -- sorting = {

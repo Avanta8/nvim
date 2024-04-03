@@ -1,11 +1,11 @@
-local core_utils = require("core.utils")
+local utils = require("core.utils")
 
 return {
   {
     "nvim-telescope/telescope.nvim",
     tag = "0.1.5",
     dependencies = {
-      dependencies = core_utils.which_key_dep({
+      dependencies = utils.which_key_dep({
         ["<leader>ls"] = { name = "search" },
       }),
       "nvim-lua/plenary.nvim",
@@ -99,6 +99,7 @@ return {
     end,
     opts = function()
       local actions = require("telescope.actions")
+      local action_set = require("telescope.actions.set")
       return {
         defaults = {
           prompt_prefix = "",
@@ -109,12 +110,32 @@ return {
           },
           mappings = {
             i = {
-              ["<Tab>"] = actions.move_selection_worse,
-              ["<S-Tab>"] = actions.move_selection_better,
+              ["<Tab>"] = actions.move_selection_next,
+              ["<S-Tab>"] = actions.move_selection_previous,
+              ["<C-s>"] = actions.select_horizontal,
+              ["<C-h>"] = actions.select_vertical,
+              ["<C-p>"] = actions.preview_scrolling_up,
+              ["<C-n>"] = actions.preview_scrolling_down,
+              ["<C-u>"] = function(prompt_bufnr)
+                action_set.shift_selection(prompt_bufnr, -8)
+              end,
+              ["<C-d>"] = function(prompt_bufnr)
+                action_set.shift_selection(prompt_bufnr, 8)
+              end,
             },
             n = {
-              ["<Tab>"] = actions.move_selection_worse,
-              ["<S-Tab>"] = actions.move_selection_better,
+              ["<Tab>"] = actions.move_selection_next,
+              ["<S-Tab>"] = actions.move_selection_previous,
+              ["<C-s>"] = actions.select_horizontal,
+              ["<C-h>"] = actions.select_vertical,
+              ["<C-p>"] = actions.preview_scrolling_up,
+              ["<C-n>"] = actions.preview_scrolling_down,
+              ["<C-u>"] = function(prompt_bufnr)
+                action_set.shift_selection(prompt_bufnr, -8)
+              end,
+              ["<C-d>"] = function(prompt_bufnr)
+                action_set.shift_selection(prompt_bufnr, 8)
+              end,
             },
           },
         },

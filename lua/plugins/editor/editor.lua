@@ -326,8 +326,83 @@ return {
   },
 
   {
+    "dstein64/nvim-scrollview",
+    opts = {
+      -- signs_on_startup = { "all" },
+      --
+      -- NOTE: There is an issue with enabling the scrollview for floating wins
+      -- casusing an issue with dressing. Code actions are not displayed.
+      -- So don't enable this for now.
+      --
+      -- floating_windows = true,
+      diagnostics_error_symbol = custom.icons.diagnostics.Error,
+      diagnostics_warn_symbol = custom.icons.diagnostics.Warn,
+      diagnostics_hint_symbol = custom.icons.diagnostics.Hint,
+      diagnostics_info_symbol = custom.icons.diagnostics.Info,
+      zindex = 1,
+    },
+  },
+
+  {
     "folke/trouble.nvim",
     branch = "dev",
+    opts = {
+      focus = true,
+      win = {
+        wo = {
+          winhighlight = "",
+        },
+      },
+      preview = {
+        type = "split",
+        relative = "win",
+        position = "right",
+        size = 0.5,
+        wo = {
+          winhighlight = "",
+        },
+      },
+      icons = {
+        kinds = custom.icons.kinds,
+      },
+      keys = {
+        ["<c-s>"] = "jump_split",
+        ["<c-h>"] = "jump_vsplit",
+      },
+      modes = {
+        preview_float = {
+          mode = "lsp_references",
+          preview = {
+            type = "float",
+            relative = "editor",
+            border = "rounded",
+            title = "Preview",
+            title_pos = "center",
+            position = { 0, -2 },
+            size = { width = 0.3, height = 0.3 },
+            zindex = 200,
+          },
+        },
+        test = {
+          mode = "lsp_references",
+          preview = {
+            type = "split",
+            relative = "win",
+            position = "right",
+            size = 0.3,
+          },
+        },
+      },
+    },
+  },
+
+  {
+    "ariel-frischer/bmessages.nvim",
+    opts = {},
+  },
+
+  {
+    "AckslD/messages.nvim",
     opts = {},
   },
 }

@@ -22,13 +22,14 @@ end
 return {
   -- Show file name top right
   {
+    lazy = false,
     "b0o/incline.nvim",
     event = "VeryLazy",
     keys = function()
       local incline = require("incline")
       return {
         {
-          "<leader>r",
+          "<leader>tI",
           function()
             vim.notify("Incline refresh", vim.log.levels.INFO)
             incline.refresh()
@@ -39,14 +40,13 @@ return {
           "<leader>ti",
           function()
             incline.toggle()
-            vim.notify("Incline " .. (incline.is_enabled() and "enabled" or "disabled"))
+            vim.notify("Incline " .. (incline.is_enabled() and "enabled" or "disabled"), vim.log.levels.INFO)
           end,
           desc = "Toggle incline",
         },
       }
     end,
     opts = {
-      debounce_threshold = 100,
       hide = {
         cursorline = true,
       },
@@ -54,19 +54,28 @@ return {
         padding = 0,
         margin = {
           horizontal = {
-            left = 40,
+            left = 5,
             right = 0,
           },
-          vertical = 1,
+          vertical = 0,
+        },
+        overlap = {
+          borders = true,
+          statusline = true,
+          tabline = true,
+          winbar = true,
         },
         placement = {
-          horizontal = "center",
+          horizontal = "left",
           vertical = "top",
         },
       },
       ignore = {
         unlisted_buffers = false,
-        filetypes = { "dashboard" },
+        floating_wins = false,
+        buftypes = { "nofile" },
+        wintypes = {},
+        filetypes = { "dashboard", "TelescopePrompt" },
       },
 
       render = function(props)
@@ -137,8 +146,11 @@ return {
           diagnostic_sec(),
           name_sec(),
           modified_sec(),
-          " " .. tostring(win) .. " ",
-          " " .. tostring(vim.fn.win_id2win(win)) .. " ",
+          -- " " .. tostring(win) .. " ",
+
+          " "
+            .. tostring(vim.fn.win_id2win(win))
+            .. " ",
           guifg = text_color,
           guibg = colors.crust,
         }
@@ -149,13 +161,16 @@ return {
       -- By default, incline will not fully redraw under an OptionSet event. Even though
       -- a buffer may change from hidden to unhidden and so it should start to get rendered.
       -- Therefore here we manually trigger complete refresh.
-      vim.api.nvim_create_autocmd({ "OptionSet" }, {
-        group = utils.augroup("incline"),
-        -- pattern = "buflisted",
-        callback = function(event)
-          incline.refresh()
-        end,
-      })
+      --
+      -- NOTE: Disable this for now because it causes flickering issue with Zellij
+      --
+      -- vim.api.nvim_create_autocmd({ "OptionSet" }, {
+      --   group = utils.augroup("incline"),
+      --   -- pattern = "buflisted",
+      --   callback = function(event)
+      --     incline.refresh()
+      --   end,
+      -- })
     end,
   },
 
@@ -409,17 +424,22 @@ return {
 
       tabline = {
         lualine_a = {
-          {
-            "tabs",
-            mode = 3,
-            path = 1,
-          },
+          -- {
+          --   "tabs",
+          --   mode = 3,
+          --   path = 1,
+          -- },
         },
         lualine_b = {},
         lualine_c = {},
         lualine_x = {},
         lualine_y = {},
-        lualine_z = {},
+        lualine_z = {
+          {
+            "tabs",
+            mode = 0,
+          },
+        },
       },
     },
   },

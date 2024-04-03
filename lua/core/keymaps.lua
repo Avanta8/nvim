@@ -1,16 +1,4 @@
 local utils = require("core.utils")
-local bufyank = require("extras.bufyank")
-
--- vim.api.nvim_create_user_command("Pick", function()
---   local win_id = require("window-picker").pick_window({
---     -- filter_rules = {
---     --   bo = {
---     --     buftype = { "nofile" },
---     --   },
---     -- },
---   })
---   vim.notify(tostring(win_id))
--- end, {})
 
 -- Quit all
 vim.keymap.set("n", "<leader>qq", "<CMD>qa<CR>", { desc = "Quit all" })
@@ -32,12 +20,22 @@ vim.keymap.set("n", "<leader>zp", "<cmd>Lazy<cr>", { desc = "Lazy" })
 vim.keymap.set("n", "<leader>v", "<c-v>")
 
 -- Remap record macro to Q
-vim.keymap.set("n", "Q", "q")
-vim.keymap.set("n", "q", "<nop>")
+vim.keymap.set({ "n", "x" }, "Q", "q")
+vim.keymap.set({ "n", "x" }, "q", "<nop>")
 
 -- Add empty lines before and after cursor line
-vim.keymap.set("n", "gO", "<CMD>call append(line('.') - 1, repeat([''], v:count1))<CR>")
-vim.keymap.set("n", "go", "<CMD>call append(line('.'),     repeat([''], v:count1))<CR>")
+vim.keymap.set(
+  "n",
+  "gO",
+  "<CMD>call append(line('.') - 1, repeat([''], v:count1))<CR>",
+  { desc = "New line above cursor" }
+)
+vim.keymap.set(
+  "n",
+  "go",
+  "<CMD>call append(line('.'),     repeat([''], v:count1))<CR>",
+  { desc = "New line below cursor" }
+)
 
 -- Paste from yank register
 vim.keymap.set({ "n", "x" }, "<leader>p", '"0p')
@@ -140,12 +138,6 @@ vim.keymap.set("i", "<A-j>", "<esc><cmd>m .+1<cr>==gi", { desc = "Move down" })
 vim.keymap.set("i", "<A-k>", "<esc><cmd>m .-2<cr>==gi", { desc = "Move up" })
 vim.keymap.set("v", "<A-j>", ":m '>+1<cr>gv=gv", { desc = "Move down" })
 vim.keymap.set("v", "<A-k>", ":m '<-2<cr>gv=gv", { desc = "Move up" })
-
--- Diagnostic
-vim.keymap.set("n", "[d", vim.diagnostic.goto_prev, { desc = "Go to previous diagnostic message" })
-vim.keymap.set("n", "]d", vim.diagnostic.goto_next, { desc = "Go to next diagnostic message" })
-vim.keymap.set("n", "<leader>ld", vim.diagnostic.open_float, { desc = "Line diagnostics" })
-vim.keymap.set("n", "<leader>le", vim.diagnostic.setloclist, { desc = "Open diagnostic quickfix list" })
 
 -- https://github.com/mhinz/vim-galore#saner-behavior-of-n-and-n
 vim.keymap.set("n", "n", "'Nn'[v:searchforward].'zv'", { expr = true, desc = "Next search result" })

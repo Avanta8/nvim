@@ -7,8 +7,18 @@ local setup_keymaps = function()
       local client = vim.lsp.get_client_by_id(event.data.client_id)
       local register = require("which-key").register
 
+      if client.supports_method("textDocument/codeLens") then
+        vim.lsp.codelens.refresh()
+        --- autocmd BufEnter,CursorHold,InsertLeave <buffer> lua vim.lsp.codelens.refresh()
+        vim.api.nvim_create_autocmd({ "BufEnter", "CursorHold", "InsertLeave" }, {
+          buffer = event.buf,
+          callback = vim.lsp.codelens.refresh,
+        })
+      end
+
       local builtin = require("telescope.builtin")
       local gtp = require("goto-preview")
+      local trouble = require("trouble")
 
       local lsp_rename = vim.lsp.buf.rename
       -- NOTE: disable this for now
@@ -17,6 +27,22 @@ local setup_keymaps = function()
         -- kinda jank way of doing this, but we need to simulate the user actually typeing these keys.
         lsp_rename = function()
           return vim.fn.feedkeys(":" .. inc_rename.config.cmd_name .. " " .. vim.fn.expand("<cword>"))
+        end
+      end
+
+      local function foo(opts)
+        if trouble.is_open(opts) then
+          -- don't close
+        elseif trouble.is_open() then
+          trouble.close()
+        end
+        trouble.open(opts)
+      end
+
+      local function trouble_wrapper(...)
+        local args = ...
+        return function()
+          foo(args)
         end
       end
 
@@ -35,38 +61,36 @@ local setup_keymaps = function()
           "Signature Help",
           mode = { "n", "i" },
         },
+        g = {
+          d = { builtin.lsp_definitions, "Definition" },
+          D = { vim.lsp.buf.declaration, "Declaration" },
+          t = { builtin.lsp_type_definitions, "Type Definition" },
+          y = { builtin.lsp_implementations, "Implementation" },
+          z = { builtin.lsp_references, "References" },
+        },
         ["<leader>"] = {
           l = {
             name = "lsp",
-            p = {
-              name = "preview",
-              p = { gtp.close_all_win, "Close preview windows" },
-              d = { gtp.goto_preview_definition, "Definition" },
-              t = { gtp.goto_preview_type_definition, "Type Definition" },
-              i = { gtp.goto_preview_implementation, "Implementation" },
-              D = { gtp.goto_preview_declaration, "Declaration" },
-              r = { gtp.goto_preview_references, "References" },
-            },
-            l = {
-              name = "search",
-              d = { builtin.lsp_definitions, "Definition" },
-              t = { builtin.lsp_type_definitions, "Type Definition" },
-              i = { builtin.lsp_implementations, "Implementation" },
-              D = { vim.lsp.buf.declaration, "Declaration" },
-              r = { builtin.lsp_references, "References" },
-              s = { builtin.lsp_document_symbols, "Document Symbols" },
-              w = { builtin.lsp_workspace_symbols, "Workspace Symbols" },
-              W = { builtin.lsp_dynamic_workspace_symbols, "Dynamic Workspace Symbols" },
-              e = {
-                function()
-                  builtin.diagnostics({ bufnr = 0 })
-                end,
-                "Diagnostics",
-              },
-              E = { builtin.diagnostics, "Workspace Diagnostics" },
-            },
-            -- k = { vim.lsp.buf.signature_help, "Signature Help" },
+            -- stylua: ignore
+            f = { function() builtin.diagnostics({ bufnr = 0 }) end, "Search Diagnostics" },
+            F = { builtin.diagnostics, "Search Workspace Diagnostics" },
+            q = { trouble_wrapper("diagnostics"), "Diagnostics Trouble" },
+            Q = { vim.diagnostic.setloclist, "Diagnostic Quickfix" },
+            e = { vim.diagnostic.open_float, "Line Diagnostics" },
+
+            s = { builtin.lsp_document_symbols, "Search Document Symbols" },
+            w = { builtin.lsp_workspace_symbols, "Search Workspace Symbols" },
+            W = { builtin.lsp_dynamic_workspace_symbols, "Search Dynamic Workspace Symbols" },
+
+            d = { trouble_wrapper("lsp_definitions"), "Definition" },
+            D = { trouble_wrapper("lsp_declarations"), "Declaration" },
+            t = { trouble_wrapper("lsp_type_definitions"), "Type Definition" },
+            y = { trouble_wrapper("lsp_implementations"), "Implementation" },
+            z = { trouble_wrapper("lsp_references"), "References" },
+
             r = { lsp_rename, "Rename" },
+            c = { vim.lsp.codelens.run, "Run Codelens", mode = { "n", "v" } },
+            C = { vim.lsp.codelens.refresh, "Refresh Codelens" },
             a = { vim.lsp.buf.code_action, "Code Action", mode = { "n", "v" } },
             A = {
               function()
@@ -74,8 +98,27 @@ local setup_keymaps = function()
               end,
               "Source action",
             },
+
+            p = {
+              name = "preview",
+              p = { gtp.close_all_win, "Close preview windows" },
+              d = { gtp.goto_preview_definition, "Definition" },
+              D = { gtp.goto_preview_declaration, "Declaration" },
+              t = { gtp.goto_preview_type_definition, "Type Definition" },
+              y = { gtp.goto_preview_implementation, "Implementation" },
+              z = { gtp.goto_preview_references, "References" },
+            },
           },
           t = {
+            f = {
+              function()
+                if trouble.is_open() then
+                  trouble.focus()
+                end
+              end,
+              "Trouble Focus",
+            },
+            q = { trouble.close, "Trouble Close" },
             h = {
               function()
                 if vim.lsp.inlay_hint == nil then
@@ -90,7 +133,8 @@ local setup_keymaps = function()
 
                 -- Toggle inlay hints for all buffers
                 local get_ls = vim.tbl_filter(function(buf)
-                  return vim.api.nvim_buf_is_valid(buf) and vim.api.nvim_get_option_value("buflisted", { buf = buf })
+                  return vim.api.nvim_buf_is_valid(buf)
+                    and vim.api.nvim_get_option_value("buftype", { buf = buf }) == ""
                 end, vim.api.nvim_list_bufs())
                 for _, buf in ipairs(get_ls) do
                   vim.lsp.inlay_hint.enable(buf, enable)
@@ -99,6 +143,12 @@ local setup_keymaps = function()
               "Toggle inlay hints",
             },
           },
+        },
+        ["["] = {
+          e = { vim.diagnostic.goto_prev, "Prev Diagnostic" },
+        },
+        ["]"] = {
+          e = { vim.diagnostic.goto_next, "Next Diagnostic" },
         },
       }, opts)
 

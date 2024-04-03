@@ -1,4 +1,4 @@
-local core_utils = require("core.utils")
+local utils = require("core.utils")
 
 return {
   -- Autopair brackets
@@ -101,6 +101,9 @@ return {
           enabled = false,
         },
         -- Disable char mode for now as it affect dot (.) repeat with t and f actions
+        char = {
+          enabled = false,
+        },
         -- char = {
         --   enabled = true,
         --   -- jump_labels = true,
@@ -118,13 +121,13 @@ return {
         --     backdrop = false,
         --   },
         -- }
-        char = {
-          multi_line = false,
-          keys = { "f", "F", "t", "T", [";"] = "<C-;>", [","] = "<C-,>" },
-          highlight = {
-            backdrop = false,
-          },
-        },
+        -- char = {
+        --   multi_line = false,
+        --   keys = { "f", "F", "t", "T", [";"] = "<C-;>", [","] = "<C-,>" },
+        --   highlight = {
+        --     backdrop = false,
+        --   },
+        -- },
 
         treesitter = {
           label = {
@@ -139,10 +142,13 @@ return {
     keys = function()
       local flash = require("flash")
       return {
-        { ";", mode = { "n", "x", "o" }, flash.jump, desc = "Flash" },
-        { ",", mode = { "n", "x", "o" }, flash.treesitter, desc = "Flash Treesitter" },
+        -- { ";", mode = { "n", "x", "o" }, flash.jump, desc = "Flash" },
+        -- { ",", mode = { "n", "x", "o" }, flash.treesitter, desc = "Flash Treesitter" },
+        { "ss", mode = { "n", "x", "o" }, flash.jump, desc = "Flash" },
+        { "s<space>", mode = { "n", "x", "o" }, flash.treesitter, desc = "Flash Treesitter" },
         { "r", mode = "o", flash.remote, desc = "Remote Flash" },
         { "R", mode = { "o", "x" }, flash.treesitter_search, desc = "Treesitter Search" },
+        -- { "<c-s>", mode = { "c" }, flash.remote, desc = "Toggle Flash Search" },
         { "<c-s>", mode = { "c" }, flash.toggle, desc = "Toggle Flash Search" },
       }
     end,
@@ -172,6 +178,12 @@ return {
     dependencies = {
       { "JoosepAlviste/nvim-ts-context-commentstring", lazy = true, opts = { enable_autocmd = false } },
     },
+
+    keys = {
+      { "<c-_>", "g//", mode = "n", desc = "Comment line", remap = true },
+      { "<c-_>", "g/gv", mode = "x", desc = "Comment selection", remap = true },
+    },
+
     opts = {
       options = {
         custom_commentstring = function()
@@ -182,17 +194,19 @@ return {
       mappings = {
         -- Toggle comment (like `gcip` - comment inner paragraph) for both
         -- Normal and Visual modes
-        comment = "gc",
+        comment = "g/",
 
         -- Toggle comment on current line
-        comment_line = "gcc",
+        comment_line = "g//",
 
         -- Toggle comment on visual selection
-        comment_visual = "gc",
+        comment_visual = "g/",
 
         -- Define 'comment' textobject (like `dgc` - delete whole comment block)
         -- Works also in Visual mode if mapping differs from `comment_visual`
-        textobject = "gc",
+        --
+        -- textobject is done by mini.ai
+        textobject = "",
       },
     },
   },
@@ -204,6 +218,7 @@ return {
     event = "VeryLazy",
     opts = function()
       local ai = require("mini.ai")
+      local comment = require("mini.comment")
       return {
         n_lines = 500,
         search_method = "cover",
@@ -214,14 +229,16 @@ return {
           }, {}),
           f = ai.gen_spec.treesitter({ a = "@function.outer", i = "@function.inner" }, {}),
           c = ai.gen_spec.treesitter({ a = "@class.outer", i = "@class.inner" }, {}),
-          t = { "<([%p%w]-)%f[^<%w][^<>]->.-</%1>", "^<.->().*()</[^/]->$" },
+          ["/"] = comment.textobject,
+          -- t = { "<([%p%w]-)%f[^<%w][^<>]->.-</%1>", "^<.->().*()</[^/]->$" },
         },
       }
     end,
     config = function(_, opts)
       require("mini.ai").setup(opts)
+
       -- register all text objects with which-key
-      core_utils.on_load("which-key.nvim", function()
+      utils.on_load("which-key.nvim", function()
         ---@type table<string, string|table>
         local i = {
           [" "] = "Whitespace",
@@ -237,6 +254,7 @@ return {
           ["}"] = "Balanced } including white-space",
           ["{"] = "Balanced {",
           ["?"] = "User Prompt",
+          ["/"] = "Comment",
           _ = "Underscore",
           a = "Argument",
           b = "Balanced ), ], }",
@@ -271,7 +289,7 @@ return {
     "mizlan/iswap.nvim",
     event = "VeryLazy",
     opts = {},
-    dependencies = core_utils.which_key_dep({
+    dependencies = utils.which_key_dep({
       ["<leader>i"] = { name = "iswap" },
     }),
     keys = {
@@ -288,7 +306,9 @@ return {
   -- Split / join code blocks
   {
     "Wansmer/treesj",
-    opts = {},
+    opts = {
+      max_join_length = 1000,
+    },
     keys = { { "gs", "<CMD>TSJToggle<CR>" } },
   },
 
@@ -301,7 +321,7 @@ return {
   {
     "LeonHeidelbach/trailblazer.nvim",
     dependencies = {
-      core_utils.which_key_dep({
+      utils.which_key_dep({
         ["<leader>m"] = { name = "trailblazer" },
       }),
     },
@@ -341,7 +361,7 @@ return {
   {
     "otavioschwanck/arrow.nvim",
     dependencies = {
-      core_utils.which_key_dep({
+      utils.which_key_dep({
         ["<leader>a"] = { "arrow" },
       }),
     },

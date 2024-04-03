@@ -32,10 +32,19 @@ return {
       },
     },
     cmd = { "TSUpdateSync", "TSUpdate", "TSInstall" },
-    keys = {
-      { "<c-space>", desc = "Increment selection" },
-      { "<bs>", desc = "Decrement selection", mode = "x" },
-    },
+    keys = function()
+      local ts_repeat_move = require("nvim-treesitter.textobjects.repeatable_move")
+      return {
+        { "<c-space>", desc = "Increment selection" },
+        { "<bs>", desc = "Decrement selection", mode = "x" },
+        { ";", ts_repeat_move.repeat_last_move_next, mode = { "n", "x", "o" } },
+        { ",", ts_repeat_move.repeat_last_move_previous, mode = { "n", "x", "o" } },
+        { "f", ts_repeat_move.builtin_f, mode = { "n", "x", "o" } },
+        { "F", ts_repeat_move.builtin_F, mode = { "n", "x", "o" } },
+        { "t", ts_repeat_move.builtin_t, mode = { "n", "x", "o" } },
+        { "T", ts_repeat_move.builtin_T, mode = { "n", "x", "o" } },
+      }
+    end,
     opts = {
       highlight = {
         enable = true,
@@ -82,22 +91,22 @@ return {
           goto_next_start = {
             ["]f"] = "@function.outer",
             ["]c"] = "@class.outer",
-            ["]a"] = "@parameter.outer",
+            ["]a"] = "@parameter.inner",
           },
           goto_next_end = {
             ["]F"] = "@function.outer",
             ["]C"] = "@class.outer",
-            ["]A"] = "@parameter.outer",
+            ["]A"] = "@parameter.inner",
           },
           goto_previous_start = {
             ["[f"] = "@function.outer",
             ["[c"] = "@class.outer",
-            ["[a"] = "@parameter.outer",
+            ["[a"] = "@parameter.inner",
           },
           goto_previous_end = {
             ["[F"] = "@function.outer",
             ["[C"] = "@class.outer",
-            ["[A"] = "@parameter.outer",
+            ["[A"] = "@parameter.inner",
           },
         },
       },
