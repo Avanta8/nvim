@@ -6,6 +6,7 @@ return {
     event = "VeryLazy",
     dependencies = {
       {
+        "RRethy/nvim-treesitter-endwise",
         "nvim-treesitter/nvim-treesitter-textobjects",
         config = function()
           -- When in diff mode, we want to use the default
@@ -109,6 +110,9 @@ return {
             ["[A"] = "@parameter.inner",
           },
         },
+      },
+      endwise = {
+        enable = true,
       },
     },
     config = function(_, opts)

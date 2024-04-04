@@ -1,67 +1,27 @@
 local utils = require("core.utils")
 
 return {
-  -- Autopair brackets
   {
-    "altermo/ultimate-autopair.nvim",
-    event = { "InsertEnter", "CmdlineEnter" },
-    branch = "v0.6", --recommended as each new version will have breaking changes
-    opts = function(_, opts)
-      if true then
-        return {}
-      end
-      local function prev_line_text()
-        local line, col = unpack(vim.api.nvim_win_get_cursor(0))
-        local line_text = vim.api.nvim_buf_get_lines(0, line - 1, line, true)[1]
-        local prev_text = line_text:sub(1, col)
-        return prev_text
-      end
+    "windwp/nvim-autopairs",
+    event = "InsertEnter",
+    opts = {
+      check_ts = true,
+      ts_config = {},
+    },
+    config = function(_, opts)
+      local npairs = require("nvim-autopairs")
+      local rule = require("nvim-autopairs.rule")
+      local cond = require("nvim-autopairs.conds")
 
-      local function matches(patterns)
-        local prev_text = prev_line_text()
-        for _, pattern in ipairs(patterns) do
-          if prev_text:find(pattern) then
-            return true
-          end
-        end
-        return false
-      end
+      npairs.setup(opts)
 
-      return {
-        {
-          "<",
-          ">",
-          cond = function(a, b, c)
-            -- for k, v in pairs(a) do
-            --   vim.print(k, v)
-            -- end
-            -- vim.print(getmetatable(b))
-            local t = getmetatable(b)
-            if t ~= nil and t.__index.key == ">" then
-              return true
-            end
-            -- print(type(t))
-            -- vim.print(t.__index)
-            -- print(t.__index.key)
-            -- for k, v in getmetatable(b) do
-            --   print(k, v)
-            -- end
-            -- if getmetatable(b).__index.key == ">" then
-            --   return true
-            -- end
-            local patterns = {
-              ":$",
-              "%w$",
-            }
-            return matches(patterns)
-          end,
-          fly = true,
-          dosuround = true,
-          newline = true,
-          space = true,
-          ft = { "rust" },
-        },
-      }
+      npairs.add_rules({
+        rule("<", ">", { "rust" }):with_pair(cond.before_regex("%a+ *", 4)):with_move(function(opts)
+          return opts.char == ">"
+        end),
+      })
+
+      npairs.add_rules({ rule("|", "|", { "rust", "go", "lua" }):with_move(cond.after_regex("|")) })
     end,
   },
 
@@ -100,34 +60,11 @@ return {
         search = {
           enabled = false,
         },
+
         -- Disable char mode for now as it affect dot (.) repeat with t and f actions
         char = {
           enabled = false,
         },
-        -- char = {
-        --   enabled = true,
-        --   -- jump_labels = true,
-        --   multi_line = false,
-        --   char_actions = function(motion)
-        --     return {
-        --       [";"] = "right", -- set to `right` to always go right
-        --       [","] = "left", -- set to `left` to always go left
-        --       -- jump2d style: same case goes next, opposite case goes prev
-        --       [motion] = "next",
-        --       [motion:match("%l") and motion:upper() or motion:lower()] = "prev",
-        --     }
-        --   end,
-        --   highlight = {
-        --     backdrop = false,
-        --   },
-        -- }
-        -- char = {
-        --   multi_line = false,
-        --   keys = { "f", "F", "t", "T", [";"] = "<C-;>", [","] = "<C-,>" },
-        --   highlight = {
-        --     backdrop = false,
-        --   },
-        -- },
 
         treesitter = {
           label = {
@@ -138,18 +75,18 @@ return {
         },
       },
     },
-    -- )stylua: ignore
     keys = function()
       local flash = require("flash")
+      -- stylua: ignore
       return {
         -- { ";", mode = { "n", "x", "o" }, flash.jump, desc = "Flash" },
         -- { ",", mode = { "n", "x", "o" }, flash.treesitter, desc = "Flash Treesitter" },
-        { "ss", mode = { "n", "x", "o" }, flash.jump, desc = "Flash" },
-        { "s<space>", mode = { "n", "x", "o" }, flash.treesitter, desc = "Flash Treesitter" },
-        { "r", mode = "o", flash.remote, desc = "Remote Flash" },
-        { "R", mode = { "o", "x" }, flash.treesitter_search, desc = "Treesitter Search" },
-        -- { "<c-s>", mode = { "c" }, flash.remote, desc = "Toggle Flash Search" },
-        { "<c-s>", mode = { "c" }, flash.toggle, desc = "Toggle Flash Search" },
+        { "ss", flash.jump, mode = { "n", "x", "o" }, desc = "Flash" },
+        { "sj", flash.jump, mode = { "n", "x", "o" }, desc = "Flash" },
+        { "sk", flash.treesitter, mode = { "n", "x", "o" }, desc = "Flash Treesitter" },
+        { "r", flash.remote, mode = "o", desc = "Remote Flash" },
+        { "R", flash.treesitter_search, mode = { "o", "x" }, desc = "Treesitter Search" },
+        { "<c-s>", flash.remote, mode = { "c" }, desc = "Toggle Flash Search" },
       }
     end,
     config = function(_, opts)

@@ -405,4 +405,9 @@ return {
     "AckslD/messages.nvim",
     opts = {},
   },
+
+  {
+    "HakonHarnes/img-clip.nvim",
+    opts = {},
+  },
 }

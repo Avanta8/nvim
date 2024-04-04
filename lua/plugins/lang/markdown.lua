@@ -8,9 +8,7 @@ return {
   }),
 
   {
-    -- Using my fork instead because the original plugin is broken for wsl if you
-    -- have appendWindowsPath = false set in wsl.conf
-    "Avanta8/markdown-preview.nvim",
+    "iamcco/markdown-preview.nvim",
     cmd = { "MarkdownPreviewToggle", "MarkdownPreview", "MarkdownPreviewStop" },
     ft = { "markdown" },
     build = function()
