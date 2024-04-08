@@ -41,12 +41,14 @@ return {
         -- file
         { "<leader>ff", builtin.find_files, desc = "Find file (cwd)" },
         { "<leader>fF", function() builtin.find_files({ cwd = utils.buffer_dir() }) end, desc = "Find file (buffer dir)" },
+        { "<leader>fh", function() builtin.find_files({ hidden = true }) end, desc = "Find file (hidden)" },
+        { "<leader>fH", function() builtin.find_files({ hidden = true, cwd = utils.buffer_dir() }) end, desc = "Find file (hidden) (buffer dir)" },
         { "<leader>fc", function() builtin.find_files({ cwd = vim.fn.stdpath("config") }) end, desc = "Find config" },
         { "<leader>fr", builtin.oldfiles, desc = "Find recent files" },
 
         -- search text
         { "<leader>jj", builtin.live_grep, desc = "Grep (cwd)" },
-        { "<leader>jg", function() builtin.live_grep( {cwd = utils.buffer_dir()}) end, desc = "Grep (buffer dir)" },
+        { "<leader>jJ", function() builtin.live_grep( {cwd = utils.buffer_dir()}) end, desc = "Grep (buffer dir)" },
         { "<leader>jf", function() builtin.live_grep( {grep_open_files = true}) end, desc = "Grep (current files)" },
         { "<leader>jw", builtin.grep_string, desc = "Grep by current word (cwd)" },
         { "<leader>jW", function() builtin.grep_string({ cwd = utils.buffer_dir() }) end, desc = "Grep by current word (buffer dir)" },

@@ -49,9 +49,9 @@ vim.keymap.set({ "n", "x" }, "<leader>D", '"_D')
 vim.keymap.set({ "n", "x" }, "<leader>c", '"_c')
 vim.keymap.set({ "n", "x" }, "<leader>C", '"_C')
 
--- Delete char without overwriting unnamed register
-vim.keymap.set({ "n", "x" }, "<leader>x", '"_x')
-vim.keymap.set({ "n", "x" }, "<leader>X", '"_X')
+-- Delete char without overwriting unnamed register by default
+vim.keymap.set({ "n", "x" }, "x", '"_x')
+vim.keymap.set({ "n", "x" }, "X", '"_X')
 
 -- Select line
 vim.keymap.set("n", "vv", "^vg_")

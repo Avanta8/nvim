@@ -59,7 +59,7 @@ local setup_keymaps = function()
             vim.lsp.buf.signature_help()
           end,
           "Signature Help",
-          mode = { "n", "i" },
+          mode = { "n", "i", "v" },
         },
         g = {
           d = { builtin.lsp_definitions, "Definition" },

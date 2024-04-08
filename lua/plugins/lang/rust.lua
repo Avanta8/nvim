@@ -10,17 +10,59 @@ return {
     "mrcjkb/rustaceanvim",
     version = "^4", -- Recommended
     ft = { "rust" },
-    -- init = function()
-    --   vim.g.rustaceanvim = {
-    --     tools = {
-    --       hover_actions = {
-    --         replace_builtin_hover = false,
-    --       },
-    --       code_actions = {
-    --         ui_select_fallback = true,
-    --       },
-    --     },
-    --   }
-    -- end,
+
+    init = function()
+      vim.g.rustaceanvim = {
+        -- tools = {
+        --   hover_actions = {
+        --     replace_builtin_hover = false,
+        --   },
+        --   code_actions = {
+        --     ui_select_fallback = true,
+        --   },
+        -- },
+        server = {
+          default_settings = {
+            ["rust-analyzer"] = {
+              inlayHints = {
+                bindingModeHints = {
+                  enable = true,
+                },
+                closingBraceHints = {
+                  enable = true,
+                  minLines = 1,
+                },
+                closureCaptureHints = {
+                  enable = true,
+                },
+                closureReturnTypeHints = {
+                  enable = "always",
+                },
+                discriminantHints = {
+                  enable = true,
+                },
+                -- expressionAdjustmentHints = {
+                --   -- enable = "reborrow_only",
+                --   enable = "always",
+                -- },
+                implicitDrops = {
+                  enable = true,
+                },
+                lifetimeElisionHints = {
+                  enable = "always",
+                  useParameterNames = true,
+                },
+                rangeExclusiveHints = {
+                  enable = true,
+                },
+                hideNamedConstructor = {
+                  enable = true,
+                },
+              },
+            },
+          },
+        },
+      }
+    end,
   },
 }
