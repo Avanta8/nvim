@@ -3,7 +3,6 @@ local utils = require("core.utils")
 return {
   {
     "nvim-telescope/telescope.nvim",
-    tag = "0.1.5",
     dependencies = {
       dependencies = utils.which_key_dep({
         ["<leader>ls"] = { name = "search" },
@@ -12,6 +11,11 @@ return {
       {
         "nvim-telescope/telescope-fzf-native.nvim",
         build = "cmake -S. -Bbuild -DCMAKE_BUILD_TYPE=Release && cmake --build build --config Release && cmake --install build --prefix build",
+      },
+
+      {
+        enabled = false,
+        "natecraddock/telescope-zf-native.nvim",
       },
     },
     lazy = false,
@@ -31,7 +35,8 @@ return {
         {
           "<leader>;",
           function()
-            builtin.current_buffer_fuzzy_find(themes.get_dropdown({ previewer = false }))
+            -- builtin.current_buffer_fuzzy_find(themes.get_dropdown({ previewer = false }))
+            builtin.current_buffer_fuzzy_find(themes.get_dropdown())
           end,
           desc = "Fuzzy find in buffer",
         },
@@ -109,6 +114,9 @@ return {
           sorting_strategy = "ascending",
           layout_config = {
             prompt_position = "top",
+          },
+          path_display = {
+            "filename_first",
           },
           mappings = {
             i = {

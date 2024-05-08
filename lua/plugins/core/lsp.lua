@@ -137,7 +137,7 @@ local setup_keymaps = function()
                     and vim.api.nvim_get_option_value("buftype", { buf = buf }) == ""
                 end, vim.api.nvim_list_bufs())
                 for _, buf in ipairs(get_ls) do
-                  vim.lsp.inlay_hint.enable(buf, enable)
+                  vim.lsp.inlay_hint.enable(enable, { bufnr = buf })
                 end
               end,
               "Toggle inlay hints",
@@ -153,7 +153,7 @@ local setup_keymaps = function()
       }, opts)
 
       if vim.lsp.inlay_hint ~= nil then
-        vim.lsp.inlay_hint.enable(event.buf, vim.g.enable_inlay_hint)
+        vim.lsp.inlay_hint.enable(vim.g.enable_inlay_hint, { bufnr = event.buf })
       end
     end,
   })
@@ -226,8 +226,11 @@ return {
         end
 
         -- Merge config with default capabilities.
-        local server_opts =
-          vim.tbl_deep_extend("force", { capabilities = vim.deepcopy(capabilities) }, server_config or {})
+        local server_opts = vim.tbl_deep_extend("force", {
+          capabilities = vim.deepcopy(capabilities),
+          -- Disabling incremental sync may prevent LSP diagnostics getting stuck
+          flags = { allow_incremental_sync = false },
+        }, server_config or {})
 
         lspconfig[server_name].setup(server_opts)
       end

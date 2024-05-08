@@ -307,6 +307,7 @@ return {
     opts = {
       show_icons = true,
       leader_key = "<leader>a",
+      buffer_leader_key = "m",
       separate_save_and_remove = true,
       mappings = {
         toggle = "a",

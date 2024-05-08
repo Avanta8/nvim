@@ -22,7 +22,6 @@ end
 return {
   -- Show file name top right
   {
-    lazy = false,
     "b0o/incline.nvim",
     event = "VeryLazy",
     keys = function()
@@ -69,6 +68,7 @@ return {
           horizontal = "left",
           vertical = "top",
         },
+        zindex = 1,
       },
       ignore = {
         unlisted_buffers = false,

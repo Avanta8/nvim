@@ -115,7 +115,6 @@ return {
 
   -- Point to lsp diagnostics
   {
-    -- enabled = false,
     "https://git.sr.ht/~whynothugo/lsp_lines.nvim",
     event = "LspAttach",
     keys = function()
@@ -353,15 +352,15 @@ return {
           winhighlight = "",
         },
       },
-      preview = {
-        type = "split",
-        relative = "win",
-        position = "right",
-        size = 0.5,
-        wo = {
-          winhighlight = "",
-        },
-      },
+      -- preview = {
+      --   type = "split",
+      --   relative = "win",
+      --   position = "right",
+      --   size = 0.5,
+      --   wo = {
+      --     winhighlight = "",
+      --   },
+      -- },
       icons = {
         kinds = custom.icons.kinds,
       },

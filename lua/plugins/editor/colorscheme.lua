@@ -61,7 +61,9 @@ return {
       integrations = {
         illuminate = {
           enabled = false,
+          -- enabled = true,
           lsp = false,
+          -- lsp = true,
         },
         mason = true,
         navic = {

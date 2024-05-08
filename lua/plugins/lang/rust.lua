@@ -33,7 +33,8 @@ return {
                   minLines = 1,
                 },
                 closureCaptureHints = {
-                  enable = true,
+                  enable = false,
+                  -- enable = true,
                 },
                 closureReturnTypeHints = {
                   enable = "always",
@@ -46,7 +47,8 @@ return {
                 --   enable = "always",
                 -- },
                 implicitDrops = {
-                  enable = true,
+                  enable = false,
+                  -- enable = true,
                 },
                 lifetimeElisionHints = {
                   enable = "always",

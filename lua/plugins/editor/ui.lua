@@ -177,7 +177,7 @@ return {
     },
     event = "VimEnter",
     opts = function()
-      local logo = string.rep("\n", 8) .. require("core.custom").logo .. "\n\n"
+      local logo = string.rep("\n", 8) .. custom.logo .. "\n\n"
 
       local opts = {
         theme = "doom",

@@ -37,6 +37,8 @@ vim.keymap.set(
   { desc = "New line below cursor" }
 )
 
+-- TODO: "so" and "sO" to comment current line(s) and duplicate the line(s) below / above cursor
+
 -- Paste from yank register
 vim.keymap.set({ "n", "x" }, "<leader>p", '"0p')
 vim.keymap.set({ "n", "x" }, "<leader>P", '"0P')
@@ -73,34 +75,6 @@ vim.keymap.set({ "n", "x" }, "<Down>", "v:count == 0 ? 'gj' : 'j'", { expr = tru
 vim.keymap.set({ "n", "x" }, "k", "v:count == 0 ? 'gk' : 'k'", { expr = true, silent = true })
 vim.keymap.set({ "n", "x" }, "<Up>", "v:count == 0 ? 'gk' : 'k'", { expr = true, silent = true })
 
--- Move to window using the <ctrl> hjkl keys
--- vim.keymap.set("n", "<C-h>", "<C-w>h", { desc = "Go to left window", remap = true })
--- vim.keymap.set("n", "<C-j>", "<C-w>j", { desc = "Go to lower window", remap = true })
--- vim.keymap.set("n", "<C-k>", "<C-w>k", { desc = "Go to upper window", remap = true })
--- vim.keymap.set("n", "<C-l>", "<C-w>l", { desc = "Go to right window", remap = true })
-
--- Easier window <C-w> bindings
--- vim.keymap.set("", "<leader>ww", "<C-w>w", { desc = "Switch Windows" })
--- vim.keymap.set("", "<leader>wp", "<C-w>p", { desc = "Prev Window" })
--- vim.keymap.set("", "<leader>wq", "<C-w>c", { desc = "Close Window" })
---
--- vim.keymap.set("", "<leader>wh", "<C-w>h", { desc = "Go to Left Window" })
--- vim.keymap.set("", "<leader>wj", "<C-w>j", { desc = "Go to Down Window" })
--- vim.keymap.set("", "<leader>wk", "<C-w>k", { desc = "Go to Right Window" })
--- vim.keymap.set("", "<leader>wl", "<C-w>l", { desc = "Go to Up Window" })
---
--- vim.keymap.set("", "<leader>wH", "<C-w>H", { desc = "Move Window Left" })
--- vim.keymap.set("", "<leader>wJ", "<C-w>J", { desc = "Move Window Down" })
--- vim.keymap.set("", "<leader>wK", "<C-w>K", { desc = "Move Window Right" })
--- vim.keymap.set("", "<leader>wL", "<C-w>L", { desc = "Move Window Up" })
-
--- Replace windows
--- stylua: ignore start
--- vim.keymap.set("n", "<leader>wrh", function() utils.replace_win_dir("h") end, { desc = "Replace Window Left" })
--- vim.keymap.set("n", "<leader>wrj", function() utils.replace_win_dir("j") end, { desc = "Replace Window Down" })
--- vim.keymap.set("n", "<leader>wrk", function() utils.replace_win_dir("k") end, { desc = "Replace Window Up" })
--- vim.keymap.set("n", "<leader>wrl", function() utils.replace_win_dir("l") end, { desc = "Replace Window Right" })
-
 -- Jump to window with count, or previous window without count
 vim.keymap.set("n", "\\", function()
   if vim.v.count > 0 then
@@ -109,6 +83,13 @@ vim.keymap.set("n", "\\", function()
     vim.cmd.wincmd("p")
   end
 end)
+
+-- Replace windows
+-- stylua: ignore start
+-- vim.keymap.set("n", "<leader>wrh", function() utils.replace_win_dir("h") end, { desc = "Replace Window Left" })
+-- vim.keymap.set("n", "<leader>wrj", function() utils.replace_win_dir("j") end, { desc = "Replace Window Down" })
+-- vim.keymap.set("n", "<leader>wrk", function() utils.replace_win_dir("k") end, { desc = "Replace Window Up" })
+-- vim.keymap.set("n", "<leader>wrl", function() utils.replace_win_dir("l") end, { desc = "Replace Window Right" })
 
 -- Delete windows
 vim.keymap.set("n", "<leader>wdh", function() utils.del_win_dir("h") end, {desc = "Delete Window Left"})
