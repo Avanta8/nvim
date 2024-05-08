@@ -112,8 +112,15 @@ return {
           prompt_prefix = "",
           initial_mode = "normal",
           sorting_strategy = "ascending",
+          layout_strategy = "flex",
           layout_config = {
             prompt_position = "top",
+            vertical = {
+              mirror = true,
+            },
+            flex = {
+              flip_columns = 130,
+            },
           },
           path_display = {
             "filename_first",
