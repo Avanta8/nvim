@@ -7,14 +7,14 @@ local setup_keymaps = function()
       local client = vim.lsp.get_client_by_id(event.data.client_id)
       local register = require("which-key").register
 
-      if client.supports_method("textDocument/codeLens") then
-        vim.lsp.codelens.refresh()
-        --- autocmd BufEnter,CursorHold,InsertLeave <buffer> lua vim.lsp.codelens.refresh()
-        vim.api.nvim_create_autocmd({ "BufEnter", "CursorHold", "InsertLeave" }, {
-          buffer = event.buf,
-          callback = vim.lsp.codelens.refresh,
-        })
-      end
+      -- if client.supports_method("textDocument/codeLens") then
+      --   vim.lsp.codelens.refresh()
+      --   --- autocmd BufEnter,CursorHold,InsertLeave <buffer> lua vim.lsp.codelens.refresh()
+      --   vim.api.nvim_create_autocmd({ "BufEnter", "CursorHold", "InsertLeave" }, {
+      --     buffer = event.buf,
+      --     callback = vim.lsp.codelens.refresh,
+      --   })
+      -- end
 
       local builtin = require("telescope.builtin")
       local gtp = require("goto-preview")
