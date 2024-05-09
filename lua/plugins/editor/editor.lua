@@ -246,6 +246,9 @@ return {
         preview = true,
         width_preview = 50,
       },
+      mappings = {
+        close = "<ESC>",
+      },
     },
   },
 
