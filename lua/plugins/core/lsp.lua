@@ -71,6 +71,7 @@ local setup_keymaps = function()
         ["<leader>"] = {
           l = {
             name = "lsp",
+            b = { "<CMD>Format<CR>", "Format file", mode = { "n", "v" } },
             -- stylua: ignore
             f = { function() builtin.diagnostics({ bufnr = 0 }) end, "Search Diagnostics" },
             F = { builtin.diagnostics, "Search Workspace Diagnostics" },

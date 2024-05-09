@@ -4,15 +4,6 @@ return {
     event = { "LspAttach", "BufWritePre" },
     keys = {
       { "<leader>zc", "<cmd>ConformInfo<cr>", desc = "Conform Info" },
-      {
-        "<leader>lf",
-        "<cmd>Format<cr>",
-        -- function()
-        -- require("conform").format({ lsp_fallback = true })
-        -- end,
-        mode = { "n", "v" },
-        desc = "Format file",
-      },
     },
     opts = {
       -- notify_on_error = false,
