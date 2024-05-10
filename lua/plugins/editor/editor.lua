@@ -197,6 +197,15 @@ return {
         pattern = "MiniFilesWindowUpdate",
         callback = function(args)
           vim.wo[args.data.win_id].relativenumber = true
+          vim.wo[args.data.win_id].scrolloff = 0
+        end,
+      })
+
+      vim.api.nvim_create_autocmd("User", {
+        pattern = "MiniFilesWindowOpen",
+        callback = function(args)
+          vim.wo[args.data.win_id].relativenumber = true
+          vim.wo[args.data.win_id].scrolloff = 0
         end,
       })
 
@@ -206,13 +215,6 @@ return {
         vim.fn.chdir(cur_directory)
         vim.notify("Set cwd to " .. cur_directory, vim.log.levels.INFO)
       end
-
-      vim.api.nvim_create_autocmd("User", {
-        pattern = "MiniFilesBufferCreate",
-        callback = function(args)
-          vim.keymap.set("n", "!", files_set_cwd, { buffer = args.data.buf_id, desc = "Set cwd" })
-        end,
-      })
 
       local map_split = function(buf_id, lhs, direction)
         local rhs = function()
@@ -235,6 +237,8 @@ return {
         pattern = "MiniFilesBufferCreate",
         callback = function(args)
           local buf_id = args.data.buf_id
+
+          vim.keymap.set("n", "!", files_set_cwd, { buffer = buf_id, desc = "Set cwd" })
           map_split(buf_id, "gs", "belowright horizontal")
           map_split(buf_id, "gv", "belowright vertical")
         end,
@@ -347,7 +351,6 @@ return {
 
   {
     "folke/trouble.nvim",
-    branch = "dev",
     opts = {
       focus = true,
       win = {

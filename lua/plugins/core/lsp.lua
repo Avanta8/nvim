@@ -7,14 +7,23 @@ local setup_keymaps = function()
       local client = vim.lsp.get_client_by_id(event.data.client_id)
       local register = require("which-key").register
 
-      -- if client.supports_method("textDocument/codeLens") then
-      --   vim.lsp.codelens.refresh()
-      --   --- autocmd BufEnter,CursorHold,InsertLeave <buffer> lua vim.lsp.codelens.refresh()
-      --   vim.api.nvim_create_autocmd({ "BufEnter", "CursorHold", "InsertLeave" }, {
-      --     buffer = event.buf,
-      --     callback = vim.lsp.codelens.refresh,
-      --   })
-      -- end
+      if client == nil then
+        vim.notify("LSP client was nil", vim.log.levels.WARN)
+        return
+      end
+
+      local refresh = function()
+        vim.lsp.codelens.refresh({ bufnr = event.buf })
+      end
+      if client.supports_method("textDocument/codeLens") then
+        refresh()
+
+        -- autocmd BufEnter,CursorHold,InsertLeave <buffer> lua vim.lsp.codelens.refresh()
+        vim.api.nvim_create_autocmd({ "BufEnter", "CursorHold", "InsertLeave" }, {
+          buffer = event.buf,
+          callback = refresh,
+        })
+      end
 
       local builtin = require("telescope.builtin")
       local gtp = require("goto-preview")
@@ -30,7 +39,7 @@ local setup_keymaps = function()
         end
       end
 
-      local function foo(opts)
+      local function trouble_inner(opts)
         if trouble.is_open(opts) then
           -- don't close
         elseif trouble.is_open() then
@@ -42,7 +51,7 @@ local setup_keymaps = function()
       local function trouble_wrapper(...)
         local args = ...
         return function()
-          foo(args)
+          trouble_inner(args)
         end
       end
 
@@ -91,7 +100,7 @@ local setup_keymaps = function()
 
             r = { lsp_rename, "Rename" },
             c = { vim.lsp.codelens.run, "Run Codelens", mode = { "n", "v" } },
-            C = { vim.lsp.codelens.refresh, "Refresh Codelens" },
+            C = { refresh, "Refresh Codelens" },
             a = { vim.lsp.buf.code_action, "Code Action", mode = { "n", "v" } },
             A = {
               function()

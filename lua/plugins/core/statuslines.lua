@@ -171,6 +171,12 @@ return {
       --     incline.refresh()
       --   end,
       -- })
+      vim.api.nvim_create_autocmd({ "DiagnosticChanged" }, {
+        group = utils.augroup("incline"),
+        callback = function(event)
+          incline.refresh()
+        end,
+      })
     end,
   },
 
@@ -481,6 +487,7 @@ return {
           "dashboard",
           "neo-tree",
           "lazy",
+          "minifiles",
         },
       }
     end,

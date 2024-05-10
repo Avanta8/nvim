@@ -74,6 +74,12 @@ return {
         which_key = true,
       },
     },
+    config = function(_, opts)
+      require("catppuccin").setup(opts)
+      -- vim.cmd.highlight("IlluminatedWordText gui=underline")
+      -- vim.cmd.highlight("IlluminatedWordRead gui=underline")
+      -- vim.cmd.highlight("IlluminatedWordWrite gui=underline")
+    end,
     init = function()
       vim.cmd.colorscheme("catppuccin")
     end,

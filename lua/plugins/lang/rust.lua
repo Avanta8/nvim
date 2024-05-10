@@ -1,3 +1,5 @@
+vim.g.no_rust_maps = true
+
 return {
   require("core.lang_setup").create_config({
     install = { "rust_analyzer" },

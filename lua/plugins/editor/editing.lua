@@ -117,8 +117,8 @@ return {
     },
 
     keys = {
-      { "<c-_>", "g//", mode = "n", desc = "Comment line", remap = true },
-      { "<c-_>", "g/gv", mode = "x", desc = "Comment selection", remap = true },
+      { "<c-_>", "gcc", mode = "n", desc = "Comment line", remap = true },
+      { "<c-_>", "gcgv", mode = "x", desc = "Comment selection", remap = true },
     },
 
     opts = {
@@ -131,13 +131,13 @@ return {
       mappings = {
         -- Toggle comment (like `gcip` - comment inner paragraph) for both
         -- Normal and Visual modes
-        comment = "g/",
+        comment = "gc",
 
         -- Toggle comment on current line
-        comment_line = "g//",
+        comment_line = "gcc",
 
         -- Toggle comment on visual selection
-        comment_visual = "g/",
+        comment_visual = "gc",
 
         -- Define 'comment' textobject (like `dgc` - delete whole comment block)
         -- Works also in Visual mode if mapping differs from `comment_visual`

@@ -137,6 +137,8 @@ return {
         matching = { disallow_symbol_nonprefix_matching = false },
       })
 
+      cmp.setup.filetype("minifiles", { enabled = false })
+
       return {
         snippet = {
           expand = function(args)
