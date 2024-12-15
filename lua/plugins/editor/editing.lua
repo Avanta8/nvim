@@ -256,6 +256,7 @@ return {
 
   -- jumplist
   {
+    enabled = false,
     "LeonHeidelbach/trailblazer.nvim",
     dependencies = {
       utils.which_key_dep({
@@ -305,7 +306,7 @@ return {
     opts = {
       show_icons = true,
       leader_key = "<leader>a",
-      buffer_leader_key = "m",
+      buffer_leader_key = "<leader>m",
       separate_save_and_remove = true,
       mappings = {
         toggle = "a",
@@ -315,7 +316,7 @@ return {
   },
 
   {
-    -- enabled = false,
+    enabled = false,
     "zbirenbaum/copilot.lua",
     cmd = "Copilot",
     build = ":Copilot auth",

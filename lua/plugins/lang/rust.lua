@@ -2,15 +2,15 @@ vim.g.no_rust_maps = true
 
 return {
   require("core.lang_setup").create_config({
-    install = { "rust_analyzer" },
     rust_analyzer = {
+      mason = false,
       setup = false,
     },
   }),
 
   {
     "mrcjkb/rustaceanvim",
-    version = "^4", -- Recommended
+    version = "^5", -- Recommended
     ft = { "rust" },
 
     init = function()

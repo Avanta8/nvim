@@ -269,6 +269,15 @@ return {
         --
         -- TODO: We could give a warning notifying to the user that they specified
         -- mason = false, but the lsp is actually currently installed by mason.
+        if server_config.mason == false and mason_installed(server_name) then
+          vim.notify(
+            "You specified for "
+              .. server_name
+              .. " not to be installed with mason. However, it is installed by mason.\n(Check that you don't have it installed by mason tool installer)",
+            vim.log.levels.WARN
+          )
+        end
+
         local setup_now = not mason_available(server_name)
           or server_config.mason == false and not mason_installed(server_name)
         if setup_now then

@@ -85,6 +85,7 @@ return {
         end,
       },
       {
+        enabled = false,
         "zbirenbaum/copilot-cmp",
         dependencies = { "zbirenbaum/copilot.lua" },
         opts = {},
