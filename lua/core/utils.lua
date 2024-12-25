@@ -17,7 +17,7 @@ function M.which_key_dep(mapping, modes)
     table[mode] = mapping
   end
   return {
-    "folke/which-key.nvim",
+    "Avanta8/which-key.nvim",
     opts = {
       extras = table,
     },

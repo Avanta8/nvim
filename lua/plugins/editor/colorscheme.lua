@@ -18,7 +18,7 @@ return {
         "gitsigns",
         "harpoon",
         "hop",
-        -- "illuminate",
+        "illuminate",
         "indent-blankline",
         "lspsaga",
         "mini",

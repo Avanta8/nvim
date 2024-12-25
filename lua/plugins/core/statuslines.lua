@@ -75,7 +75,7 @@ return {
         floating_wins = false,
         buftypes = { "nofile" },
         wintypes = {},
-        filetypes = { "dashboard", "TelescopePrompt" },
+        filetypes = { "dashboard", "TelescopePrompt", "Glance" },
       },
 
       render = function(props)

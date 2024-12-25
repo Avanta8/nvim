@@ -160,14 +160,36 @@ return {
         n_lines = 500,
         search_method = "cover",
         custom_textobjects = {
-          o = ai.gen_spec.treesitter({
+          o = ai.gen_spec.treesitter({ -- code block
             a = { "@block.outer", "@conditional.outer", "@loop.outer" },
             i = { "@block.inner", "@conditional.inner", "@loop.inner" },
-          }, {}),
-          f = ai.gen_spec.treesitter({ a = "@function.outer", i = "@function.inner" }, {}),
-          c = ai.gen_spec.treesitter({ a = "@class.outer", i = "@class.inner" }, {}),
-          ["/"] = comment.textobject,
-          -- t = { "<([%p%w]-)%f[^<%w][^<>]->.-</%1>", "^<.->().*()</[^/]->$" },
+          }),
+          f = ai.gen_spec.treesitter({ a = "@function.outer", i = "@function.inner" }), -- function
+          g = ai.gen_spec.treesitter({ a = "@class.outer", i = "@class.inner" }), -- class
+          c = comment.textobject,
+          t = { "<([%p%w]-)%f[^<%w][^<>]->.-</%1>", "^<.->().*()</[^/]->$" }, -- tags
+          d = { "%f[%d]%d+" }, -- digits
+          e = { -- Word with case
+            { "%u[%l%d]+%f[^%l%d]", "%f[%S][%l%d]+%f[^%l%d]", "%f[%P][%l%d]+%f[^%l%d]", "^[%l%d]+%f[^%l%d]" },
+            "^().*()$",
+          },
+          h = function(ai_type)
+            local start_line, end_line = 1, vim.fn.line("$")
+            if ai_type == "i" then
+              -- Skip first and last blank lines for `i` textobject
+              local first_nonblank, last_nonblank = vim.fn.nextnonblank(start_line), vim.fn.prevnonblank(end_line)
+              -- Do nothing for buffer with all blanks
+              if first_nonblank == 0 or last_nonblank == 0 then
+                return { from = { line = start_line, col = 1 } }
+              end
+              start_line, end_line = first_nonblank, last_nonblank
+            end
+
+            local to_col = math.max(vim.fn.getline(end_line):len(), 1)
+            return { from = { line = start_line, col = 1 }, to = { line = end_line, col = to_col } }
+          end, -- buffer
+          u = ai.gen_spec.function_call(), -- u for "Usage"
+          U = ai.gen_spec.function_call({ name_pattern = "[%w_]" }), -- without dot in function name
         },
       }
     end,
@@ -176,47 +198,108 @@ return {
 
       -- register all text objects with which-key
       utils.on_load("which-key.nvim", function()
-        ---@type table<string, string|table>
-        local i = {
-          [" "] = "Whitespace",
-          ['"'] = 'Balanced "',
-          ["'"] = "Balanced '",
-          ["`"] = "Balanced `",
-          ["("] = "Balanced (",
-          [")"] = "Balanced ) including white-space",
-          [">"] = "Balanced > including white-space",
-          ["<lt>"] = "Balanced <",
-          ["]"] = "Balanced ] including white-space",
-          ["["] = "Balanced [",
-          ["}"] = "Balanced } including white-space",
-          ["{"] = "Balanced {",
-          ["?"] = "User Prompt",
-          ["/"] = "Comment",
-          _ = "Underscore",
-          a = "Argument",
-          b = "Balanced ), ], }",
-          c = "Class",
-          f = "Function",
-          o = "Block, conditional, loop",
-          q = "Quote `, \", '",
-          t = "Tag",
-        }
-        local a = vim.deepcopy(i)
-        for k, v in pairs(a) do
-          a[k] = v:gsub(" including.*", "")
-        end
+        vim.schedule(function()
+          local objects = {
+            { " ", desc = "whitespace" },
+            { '"', desc = '" string' },
+            { "'", desc = "' string" },
+            { "(", desc = "() block" },
+            { ")", desc = "() block with ws" },
+            { "<", desc = "<> block" },
+            { ">", desc = "<> block with ws" },
+            { "?", desc = "user prompt" },
+            { "U", desc = "use/call without dot" },
+            { "[", desc = "[] block" },
+            { "]", desc = "[] block with ws" },
+            { "_", desc = "underscore" },
+            { "`", desc = "` string" },
+            { "a", desc = "argument" },
+            { "b", desc = ")]} block" },
+            { "c", desc = "comment" },
+            { "d", desc = "digit(s)" },
+            { "e", desc = "CamelCase / snake_case" },
+            { "f", desc = "function" },
+            { "g", desc = "class" },
+            { "h", desc = "entire file" },
+            { "i", desc = "indent" },
+            { "o", desc = "block, conditional, loop" },
+            { "q", desc = "quote `\"'" },
+            { "t", desc = "tag" },
+            { "u", desc = "use/call" },
+            { "{", desc = "{} block" },
+            { "}", desc = "{} with ws" },
+          }
 
-        local ic = vim.deepcopy(i)
-        local ac = vim.deepcopy(a)
-        for key, name in pairs({ n = "Next", l = "Last" }) do
-          i[key] = vim.tbl_extend("force", { name = "Inside " .. name .. " textobject" }, ic)
-          a[key] = vim.tbl_extend("force", { name = "Around " .. name .. " textobject" }, ac)
-        end
-        require("which-key").register({
-          mode = { "o", "x" },
-          i = i,
-          a = a,
-        })
+          ---@type wk.Spec[]
+          local ret = { mode = { "o", "x" } }
+          ---@type table<string, string>
+          local mappings = vim.tbl_extend("force", {}, {
+            around = "a",
+            inside = "i",
+            around_next = "an",
+            inside_next = "in",
+            around_last = "al",
+            inside_last = "il",
+          }, opts.mappings or {})
+          mappings.goto_left = nil
+          mappings.goto_right = nil
+
+          for name, prefix in pairs(mappings) do
+            name = name:gsub("^around_", ""):gsub("^inside_", "")
+            ret[#ret + 1] = { prefix, group = name }
+            for _, obj in ipairs(objects) do
+              local desc = obj.desc
+              if prefix:sub(1, 1) == "i" then
+                desc = desc:gsub(" with ws", "")
+              end
+              ret[#ret + 1] = { prefix .. obj[1], desc = obj.desc }
+            end
+          end
+          require("which-key").add(ret, { notify = false })
+
+          -- ---@type table<string, string|table>
+          -- local i = {
+          --   [" "] = "Whitespace",
+          --   ['"'] = 'Balanced "',
+          --   ["'"] = "Balanced '",
+          --   ["`"] = "Balanced `",
+          --   ["("] = "Balanced (",
+          --   [")"] = "Balanced ) including white-space",
+          --   [">"] = "Balanced > including white-space",
+          --   ["<lt>"] = "Balanced <",
+          --   ["]"] = "Balanced ] including white-space",
+          --   ["["] = "Balanced [",
+          --   ["}"] = "Balanced } including white-space",
+          --   ["{"] = "Balanced {",
+          --   ["?"] = "User Prompt",
+          --   ["/"] = "Comment",
+          --   _ = "Underscore",
+          --   a = "Argument",
+          --   b = "Balanced ), ], }",
+          --   c = "Comment",
+          --   f = "Function",
+          --   g = "Class",
+          --   o = "Block, conditional, loop",
+          --   q = "Quote `, \", '",
+          --   t = "Tag",
+          -- }
+          -- local a = vim.deepcopy(i)
+          -- for k, v in pairs(a) do
+          --   a[k] = v:gsub(" including.*", "")
+          -- end
+          --
+          -- local ic = vim.deepcopy(i)
+          -- local ac = vim.deepcopy(a)
+          -- for key, name in pairs({ n = "Next", l = "Last" }) do
+          --   i[key] = vim.tbl_extend("force", { name = "Inside " .. name .. " textobject" }, ic)
+          --   a[key] = vim.tbl_extend("force", { name = "Around " .. name .. " textobject" }, ac)
+          -- end
+          -- require("which-key").register({
+          --   mode = { "o", "x" },
+          --   i = i,
+          --   a = a,
+          -- })
+        end)
       end)
     end,
   },
@@ -252,47 +335,6 @@ return {
   {
     "echasnovski/mini.misc",
     opts = {},
-  },
-
-  -- jumplist
-  {
-    enabled = false,
-    "LeonHeidelbach/trailblazer.nvim",
-    dependencies = {
-      utils.which_key_dep({
-        ["<leader>m"] = { name = "trailblazer" },
-      }),
-    },
-    opts = {
-      trail_options = {
-        trail_mark_symbol_line_indicators_enabled = true,
-        symbol_line_enabled = false,
-        -- number_line_color_enabled = false,
-        multiple_mark_symbol_counters_enabled = false,
-        trail_mark_in_text_highlights_enabled = false,
-      },
-      force_mappings = { -- rename this to "force_mappings" to completely override default mappings and not merge with them
-        nv = { -- Mode union: normal & visual mode. Can be extended by adding i, x, ...
-          motions = {
-            new_trail_mark = "<leader>mm",
-            track_back = "<leader>ml",
-            peek_move_next_down = "<leader>mi",
-            peek_move_previous_up = "<leader>mo",
-            move_to_nearest = "<leader>mn",
-            toggle_trail_mark_list = "<leader>mt",
-          },
-          actions = {
-            delete_all_trail_marks = "<leader>md",
-            paste_at_last_trail_mark = "<leader>mp",
-            paste_at_all_trail_marks = "<leader>mP",
-            -- set_trail_mark_select_mode = "<A-t>",
-            -- switch_to_next_trail_mark_stack = "<A-.>",
-            -- switch_to_previous_trail_mark_stack = "<A-,>",
-            -- set_trail_mark_stack_sort_mode = "<A-s>",
-          },
-        },
-      },
-    },
   },
 
   -- jump buffers

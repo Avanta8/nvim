@@ -110,7 +110,6 @@ vim.keymap.set("n", "<C-Right>", "<cmd>vertical resize +2<cr>", { desc = "Increa
 
 -- Buffer switch
 vim.keymap.set("n", "<leader>bb", "<cmd>e #<cr>", { desc = "Switch to Other Buffer" })
-vim.keymap.set("n", "<leader>`", "<cmd>e #<cr>", { desc = "Switch to Other Buffer" })
 
 -- Move Lines
 vim.keymap.set("n", "<A-j>", "<cmd>m .+1<cr>==", { desc = "Move down" })

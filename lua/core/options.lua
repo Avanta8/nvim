@@ -91,3 +91,9 @@ end
 vim.lsp.handlers["textDocument/signatureHelp"] = vim.lsp.with(vim.lsp.handlers.signature_help, {
   close_events = { "CursorMoved" },
 })
+
+if vim.lsp.inlay_hint == nil then
+  vim.notify("Inlay hints not supported", vim.log.levels.WARN)
+else
+  vim.lsp.inlay_hint.enable(true, nil)
+end

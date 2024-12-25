@@ -1,6 +1,59 @@
+-- local State = require("which-key.state")
+
+-- local M = {}
+--
+-- -- M.hydra_count = 0
+--
+-- M.old_start = State.start
+--
+-- -- ---@param opts? wk.Filter
+-- -- function M.start(opts)
+-- --   vim.notify("start")
+-- --   vim.notify(vim.inspect(M.hydra_count))
+-- --   vim.notify(vim.inspect(opts))
+-- --   if opts ~= nil then
+-- --     if opts.loop == true then
+-- --       if opts.hydra_count == nil then
+-- --         M.hydra_count = M.hydra_count + 1
+-- --         opts.hydra_count = M.hydra_count
+-- --       else
+-- --         if opts.hydra_count ~= M.hydra_count then
+-- --           vim.notify("ignoring")
+-- --           return false
+-- --         end
+-- --       end
+-- --     end
+-- --   end
+-- --   return M.old_start(opts)
+-- -- end
+-- --
+--
+-- ---@param opts? wk.Filter
+-- function M.start(opts)
+--   vim.notify("start")
+--   vim.notify(vim.inspect(M.hydra_count))
+--   vim.notify(vim.inspect(opts))
+--   if opts ~= nil then
+--     if opts.loop == true then
+--       -- if opts.hydra_count == nil then
+--       --   M.hydra_count = M.hydra_count + 1
+--       --   opts.hydra_count = M.hydra_count
+--       -- else
+--       --   if opts.hydra_count ~= M.hydra_count then
+--       --     vim.notify("ignoring")
+--       --     return false
+--       --   end
+--       -- end
+--     end
+--   end
+--   return M.old_start(opts)
+-- end
+--
+-- State.start = M.start
+
 return {
   {
-    "folke/which-key.nvim",
+    "Avanta8/which-key.nvim",
     event = "VeryLazy",
     opts = {
       defaults = {
@@ -30,6 +83,78 @@ return {
         },
       },
     },
+    keys = function()
+      local wk = require("which-key")
+      -- local view = require("which-key.view")
+      -- local state = require("which-key.state")
+      -- local util = require("which-key.util")
+      local hydra = function(keys)
+        return function()
+          -- local esc = vim.api.nvim_replace_termcodes("<ESC>", true, false, true)
+          -- vim.api.nvim_feedkeys(esc, "x", false)
+          -- vim.schedule(function()
+          --   wk.show({ keys = keys, loop = true })
+          -- end)
+
+          -- State.stop()
+          -- vim.schedule(function()
+          wk.show({ keys = keys, loop = true })
+          -- end)
+          -- vim.schedule(function()
+          --   wk.show({ keys = keys, loop = true })
+          -- end)
+
+          -- vim.defer_fn(function()
+          --   State.stop()
+          --   State.state = nil
+          --   view.hide()
+          --
+          --   vim.defer_fn(function()
+          --     wk.show({ keys = keys, loop = true })
+          --   end, 100)
+          -- end, 100)
+        end
+      end
+      return {
+        { "<c-w><space>", hydra("<c-w>"), desc = "Window Hydra" },
+        { "[<space>", hydra("["), desc = "[ Hydra" },
+        { "][", hydra("["), desc = "[ Hydra" },
+        { "]<space>", hydra("]"), desc = "] Hydra" },
+        { "[]", hydra("]"), desc = "] Hydra" },
+        { "[]", hydra("]"), desc = "] Hydra" },
+        -- {
+        --   "[]",
+        --   -- function()
+        --   -- vim.notify("[]")
+        --   -- wk.show({ loop = false })
+        --   -- local esc = vim.api.nvim_replace_termcodes("<ESC>", true, false, true)
+        --   -- vim.schedule(function()
+        --   --   vim.notify("ESC")
+        --   --   vim.api.nvim_feedkeys("f", "x", false)
+        --   -- end)
+        --   -- vim.api.nvim_input("<esc>")
+        --   -- M.exit()
+        --   -- error()
+        --   -- vim.cmd("feedkeys('<ESC>')")
+        --   -- end,
+        --   -- hydra("]"),
+        --   function()
+        --     vim.notify("Pressed")
+        --     State.stop()
+        --     M.hydra_count = M.hydra_count + 1
+        --     -- state.stop()
+        --     vim.schedule(function()
+        --       -- view.hide()
+        --       -- state.stop()
+        --       -- M.exit()
+        --       vim.notify("sc nydra")
+        --       hydra("]")()
+        --     end)
+        --   end,
+        --   desc = "] Hydra",
+        -- },
+      }
+    end,
     config = function(_, opts)
       local wk = require("which-key")
       wk.setup(opts)

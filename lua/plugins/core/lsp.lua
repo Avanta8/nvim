@@ -28,6 +28,7 @@ local setup_keymaps = function()
       local builtin = require("telescope.builtin")
       local gtp = require("goto-preview")
       local trouble = require("trouble")
+      local glance = require("glance")
 
       local lsp_rename = vim.lsp.buf.rename
       -- NOTE: disable this for now
@@ -52,6 +53,13 @@ local setup_keymaps = function()
         local args = ...
         return function()
           trouble_inner(args)
+        end
+      end
+
+      ---@param method GlanceMethod
+      local function glance_open(method)
+        return function()
+          glance.open(method)
         end
       end
 
@@ -81,22 +89,12 @@ local setup_keymaps = function()
           l = {
             name = "lsp",
             b = { "<CMD>Format<CR>", "Format file", mode = { "n", "v" } },
-            -- stylua: ignore
-            f = { function() builtin.diagnostics({ bufnr = 0 }) end, "Search Diagnostics" },
-            F = { builtin.diagnostics, "Search Workspace Diagnostics" },
-            q = { trouble_wrapper("diagnostics"), "Diagnostics Trouble" },
-            Q = { vim.diagnostic.setloclist, "Diagnostic Quickfix" },
-            e = { vim.diagnostic.open_float, "Line Diagnostics" },
 
-            s = { builtin.lsp_document_symbols, "Search Document Symbols" },
-            w = { builtin.lsp_workspace_symbols, "Search Workspace Symbols" },
-            W = { builtin.lsp_dynamic_workspace_symbols, "Search Dynamic Workspace Symbols" },
-
-            d = { trouble_wrapper("lsp_definitions"), "Definition" },
-            D = { trouble_wrapper("lsp_declarations"), "Declaration" },
-            t = { trouble_wrapper("lsp_type_definitions"), "Type Definition" },
-            y = { trouble_wrapper("lsp_implementations"), "Implementation" },
-            z = { trouble_wrapper("lsp_references"), "References" },
+            -- d = { trouble_wrapper("lsp_definitions"), "Definition" },
+            -- D = { trouble_wrapper("lsp_declarations"), "Declaration" },
+            -- t = { trouble_wrapper("lsp_type_definitions"), "Type Definition" },
+            -- y = { trouble_wrapper("lsp_implementations"), "Implementation" },
+            -- z = { trouble_wrapper("lsp_references"), "References" },
 
             r = { lsp_rename, "Rename" },
             c = { vim.lsp.codelens.run, "Run Codelens", mode = { "n", "v" } },
@@ -109,15 +107,34 @@ local setup_keymaps = function()
               "Source action",
             },
 
-            p = {
-              name = "preview",
-              p = { gtp.close_all_win, "Close preview windows" },
-              d = { gtp.goto_preview_definition, "Definition" },
-              D = { gtp.goto_preview_declaration, "Declaration" },
-              t = { gtp.goto_preview_type_definition, "Type Definition" },
-              y = { gtp.goto_preview_implementation, "Implementation" },
-              z = { gtp.goto_preview_references, "References" },
-            },
+            -- p = {
+            --   name = "preview",
+            --   p = { gtp.close_all_win, "Close preview windows" },
+            --   d = { gtp.goto_preview_definition, "Definition" },
+            --   D = { gtp.goto_preview_declaration, "Declaration" },
+            --   t = { gtp.goto_preview_type_definition, "Type Definition" },
+            --   y = { gtp.goto_preview_implementation, "Implementation" },
+            --   z = { gtp.goto_preview_references, "References" },
+            -- },
+          },
+          h = {
+            d = { vim.diagnostic.open_float, "Line Diagnostics" },
+            -- stylua: ignore
+            e = { function() builtin.diagnostics({ bufnr = 0 }) end, "Search Diagnostics" },
+            f = { builtin.diagnostics, "Search Workspace Diagnostics" },
+            q = { trouble_wrapper("diagnostics"), "Diagnostics Trouble" },
+            Q = { vim.diagnostic.setloclist, "Diagnostic Quickfix" },
+
+            s = { builtin.lsp_document_symbols, "Search Document Symbols" },
+            w = { builtin.lsp_workspace_symbols, "Search Workspace Symbols" },
+            a = { builtin.lsp_dynamic_workspace_symbols, "Search Dynamic Workspace Symbols" },
+          },
+          k = {
+            name = "Glance",
+            d = { glance_open("definitions"), "Glance definitions" },
+            t = { glance_open("type_definitions"), "Glance type definitions" },
+            y = { glance_open("implementations"), "Glance implementations" },
+            z = { glance_open("references"), "Glance references" },
           },
           t = {
             f = {
@@ -136,19 +153,9 @@ local setup_keymaps = function()
                   return
                 end
 
-                -- local enable = not vim.lsp.inlay_hint.is_enabled()
-                vim.g.enable_inlay_hint = not vim.g.enable_inlay_hint
-                local enable = vim.g.enable_inlay_hint
+                local enable = not vim.lsp.inlay_hint.is_enabled(nil)
                 vim.notify("Inlay hints " .. (enable and "enabled" or "disabled"), vim.log.levels.INFO)
-
-                -- Toggle inlay hints for all buffers
-                local get_ls = vim.tbl_filter(function(buf)
-                  return vim.api.nvim_buf_is_valid(buf)
-                    and vim.api.nvim_get_option_value("buftype", { buf = buf }) == ""
-                end, vim.api.nvim_list_bufs())
-                for _, buf in ipairs(get_ls) do
-                  vim.lsp.inlay_hint.enable(enable, { bufnr = buf })
-                end
+                vim.lsp.inlay_hint.enable(enable, nil)
               end,
               "Toggle inlay hints",
             },
@@ -161,10 +168,6 @@ local setup_keymaps = function()
           e = { vim.diagnostic.goto_next, "Next Diagnostic" },
         },
       }, opts)
-
-      if vim.lsp.inlay_hint ~= nil then
-        vim.lsp.inlay_hint.enable(vim.g.enable_inlay_hint, { bufnr = event.buf })
-      end
     end,
   })
 end
@@ -176,20 +179,6 @@ return {
       -- mason must be setup before lspconfig
       "williamboman/mason.nvim",
       "williamboman/mason-lspconfig.nvim",
-      -- NOTE: neodev must be setup before lspconfig (nvim-lspconfig)
-      -- I think that putting it as a dependency mandates that it is setup before this
-      -- plugin but not 100% sure.
-      {
-        "folke/neodev.nvim",
-        opts = {
-          library = {
-            enabled = true,
-            runtime = true,
-            types = true,
-            plugins = false,
-          },
-        },
-      },
     },
     keys = {
       { "<leader>zl", "<cmd>LspInfo<cr>", desc = "Lsp Info" },

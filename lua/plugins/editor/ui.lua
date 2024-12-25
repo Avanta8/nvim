@@ -61,6 +61,13 @@ return {
         end,
         desc = "Show notify",
       },
+      {
+        "<leader>sN",
+        function()
+          require("mini.notify").clear()
+        end,
+        desc = "Clear notify",
+      },
     },
     config = function(_, opts)
       local notify = require("mini.notify")

@@ -10,19 +10,40 @@ return {
 
   {
     "dnlhc/glance.nvim",
-    opts = {
-      -- preview_win_opts = {
-      --   relative = "win",
-      -- },
-      border = {
-        enable = true,
-      },
-      theme = {
-        enable = true,
-        mode = "brighten",
-        -- mode = "darken",
-      },
-    },
+    opts = function()
+      local glance = require("glance")
+      local actions = glance.actions
+      return {
+        -- preview_win_opts = {
+        --   relative = "win",
+        -- },
+        detached = true,
+        border = {
+          enable = true,
+        },
+        theme = {
+          enable = true,
+          -- mode = "brighten",
+          mode = "darken",
+        },
+        winbar = {
+          enable = true,
+        },
+
+        mappings = {
+          list = {
+            ["<leader>k"] = glance.actions.enter_win("preview"),
+            ["<leader>l"] = false,
+            ["<Esc>"] = false,
+          },
+          preview = {
+            Q = false,
+            ["<leader>l"] = false,
+            ["<leader>kk"] = glance.actions.enter_win("list"),
+          },
+        },
+      }
+    end,
   },
 
   {
