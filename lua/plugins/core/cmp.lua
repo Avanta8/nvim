@@ -1,274 +1,119 @@
-local utils = require("core.utils")
-
-local has_words_before = function()
-  unpack = unpack or table.unpack
-  local line, col = unpack(vim.api.nvim_win_get_cursor(0))
-  return col ~= 0 and vim.api.nvim_buf_get_lines(0, line - 1, line, true)[1]:sub(col, col):match("%s") == nil
-end
-
-local border_opts = {
-  border = "single",
-  winhighlight = "Normal:Normal,FloatBorder:FloatBorder,CursorLine:Visual,Search:None",
-}
+local border = "single"
+local winhighlight = "Normal:Normal,FloatBorder:FloatBorder,CursorLine:Visual,Search:None"
 
 return {
-  { -- Autocompletion
-    "hrsh7th/nvim-cmp",
-    event = "InsertEnter",
+  {
+    "saghen/blink.cmp",
+
+    -- optional: provides snippets for the snippet source
     dependencies = {
-      -- Snippet Engine & its associated nvim-cmp source
       {
-        "L3MON4D3/LuaSnip",
-        dependencies = {
-          {
-            "rafamadriz/friendly-snippets",
-            config = function()
-              require("luasnip.loaders.from_vscode").lazy_load()
-            end,
-          },
-        },
-        build = (function()
-          -- Build Step is needed for regex support in snippets
-          -- This step is not supported in many windows environments
-          -- Remove the below condition to re-enable on windows
-          if vim.fn.has("win32") == 1 or vim.fn.executable("make") == 0 then
-            return
-          end
-          return "make install_jsregexp"
-        end)(),
-        opts = function()
-          local types = require("luasnip.util.types")
-          local ext_opt = {
-            virt_text = { { "│", "Visual" } },
-            virt_text_pos = "inline",
-          }
-          return {
-            -- Display a cursor-like placeholder in unvisited nodes
-            -- of the snippet.
-            ext_opts = {
-              [types.insertNode] = {
-                unvisited = ext_opt,
-              },
-              [types.exitNode] = {
-                unvisited = ext_opt,
-              },
-            },
-          }
-        end,
-        config = function(_, opts)
-          local luasnip = require("luasnip")
-
-          luasnip.setup(opts)
-
-          -- Use <C-c> to select a choice in a snippet.
-          vim.keymap.set({ "i", "s" }, "<C-c>", function()
-            if luasnip.choice_active() then
-              require("luasnip.extras.select_choice")()
-            end
-          end, { desc = "Select choice" })
-
-          vim.api.nvim_create_autocmd("ModeChanged", {
-            group = utils.augroup("cancel_snippet"),
-            desc = "Cancel the snippet session when leaving insert mode",
-            pattern = { "s:n", "i:*" },
-            callback = function(args)
-              if
-                luasnip.session
-                and luasnip.session.current_nodes[args.buf]
-                and not luasnip.session.jump_active
-                and not luasnip.choice_active()
-              then
-                luasnip.unlink_current()
-              end
-            end,
-          })
-        end,
+        "rafamadriz/friendly-snippets",
       },
-      {
-        enabled = false,
-        "zbirenbaum/copilot-cmp",
-        dependencies = { "zbirenbaum/copilot.lua" },
-        opts = {},
-      },
-      {
-        "zjp-CN/nvim-cmp-lsp-rs",
-        opts = {},
-      },
-      "saadparwaiz1/cmp_luasnip",
-      "hrsh7th/cmp-nvim-lsp",
-      "hrsh7th/cmp-buffer",
-      "hrsh7th/cmp-path",
-      "hrsh7th/cmp-cmdline",
     },
-    opts = function()
-      local luasnip = require("luasnip")
-      local cmp = require("cmp")
-      local types = require("cmp.types")
-      local cmp_lsp_rs = require("cmp_lsp_rs")
-      local comparators = cmp_lsp_rs.comparators
 
-      ---@type table<integer, integer>
-      local modified_priority = {
-        [types.lsp.CompletionItemKind.Variable] = types.lsp.CompletionItemKind.Method,
-        [types.lsp.CompletionItemKind.Snippet] = 0, -- top
-        [types.lsp.CompletionItemKind.Keyword] = 0, -- top
-        [types.lsp.CompletionItemKind.Text] = 100, -- bottom
-      }
-      ---@param kind integer: kind of completion entry
-      local function modified_kind(kind)
-        return modified_priority[kind] or kind
-      end
+    -- use a release tag to download pre-built binaries
+    version = "0.8.*",
+    -- AND/OR build from source, requires nightly: https://rust-lang.github.io/rustup/concepts/channels.html#working-with-nightly-rust
+    -- build = 'cargo build --release',
+    -- If you use nix, you can build from source using latest nightly rust with:
+    -- build = 'nix run .#build-plugin',
 
-      -- Use buffer source for `/` and `?` (if you enabled `native_menu`, this won't work anymore).
-      cmp.setup.cmdline({ "/", "?" }, {
-        mapping = cmp.mapping.preset.cmdline(),
-        sources = {
-          { name = "buffer" },
+    event = "InsertEnter",
+
+    ---@module 'blink.cmp'
+    ---@type blink.cmp.Config
+    opts = {
+
+      appearance = {
+        -- Sets the fallback highlight groups to nvim-cmp's highlight groups
+        -- Useful for when your theme doesn't support blink.cmp
+        -- Will be removed in a future release
+        -- use_nvim_cmp_as_default = true,
+
+        -- Set to 'mono' for 'Nerd Font Mono' or 'normal' for 'Nerd Font'
+        -- Adjusts spacing to ensure icons are aligned
+        nerd_font_variant = "mono",
+
+        kind_icons = require("core.custom").icons.kinds,
+      },
+
+      -- https://cmp.saghen.dev/configuration/reference#completion
+      completion = {
+
+        keyword = {},
+
+        trigger = {
+          show_on_blocked_trigger_characters = {},
         },
-      })
 
-      -- Use cmdline & path source for ':' (if you enabled `native_menu`, this won't work anymore).
-      cmp.setup.cmdline(":", {
-        mapping = cmp.mapping.preset.cmdline(),
-        sources = cmp.config.sources({
-          { name = "path" },
-        }, {
-          { name = "cmdline" },
-        }),
-        matching = { disallow_symbol_nonprefix_matching = false },
-      })
+        list = {
+          selection = "auto_insert",
+        },
 
-      cmp.setup.filetype("minifiles", { enabled = false })
+        accept = {},
 
-      return {
-        snippet = {
-          expand = function(args)
-            luasnip.lsp_expand(args.body)
-          end,
-        },
-        preselect = cmp.PreselectMode.None,
-        completion = { completeopt = "menu,menuone,noselect" },
-        formatting = {
-          fields = { "kind", "abbr", "menu" },
-          format = function(_, item)
-            local icons = require("core.custom").icons.kinds
-            if icons[item.kind] then
-              item.kind = icons[item.kind] .. item.kind
-            end
-            return item
-          end,
-        },
-        experimental = {
-          ghost_text = false,
-        },
-        view = {
-          entries = {
-            follow_cursor = true,
+        menu = {
+          border = border,
+          winhighlight = winhighlight,
+
+          draw = {
+            treesitter = { "lsp" },
+            columns = { { "kind_icon", "kind" }, { "label", "label_description", gap = 1 } },
           },
         },
+
+        documentation = {
+          auto_show = true,
+          auto_show_delay_ms = 0,
+          update_delay_ms = 0,
+          window = {
+            border = border,
+            winhighlight = winhighlight,
+          },
+        },
+      },
+
+      fuzzy = {
+        -- use_typo_resistance = false,
+        -- use_frecency = false,
+        -- use_proximity = false,
+        -- sorts = { "kind" },
+      },
+
+      keymap = {
+        preset = "none",
+
+        ["<C-space>"] = { "show", "show_documentation", "hide_documentation" },
+
+        ["<C-g>"] = { "cancel" },
+        ["<C-e>"] = { "select_and_accept" },
+        ["<CR>"] = { "accept", "fallback" },
+
+        ["<Tab>"] = { "select_next" },
+        ["<S-Tab>"] = { "select_prev" },
+
+        ["<C-b>"] = { "scroll_documentation_up" },
+        ["<C-f>"] = { "scroll_documentation_down" },
+
+        ["<C-h>"] = { "snippet_backward" },
+        ["<C-l>"] = { "snippet_forward" },
+      },
+
+      signature = {
+        enabled = true,
         window = {
-          completion = cmp.config.window.bordered(border_opts),
-          documentation = cmp.config.window.bordered(border_opts),
+          border = border,
+          winhighlight = winhighlight,
         },
-        sources = cmp.config.sources({
-          { name = "nvim_lsp" },
-          { name = "luasnip" },
-          -- { name = "copilot", priority = 500 },
-          { name = "buffer" },
-          { name = "path" },
-          { name = "emoji" },
-        }),
-        -- https://github.com/pysan3/dotfiles/blob/9d3ca30baecefaa2a6453d8d6d448d62b5614ff2/nvim/lua/plugins/70-nvim-cmp.lua#L132-L162
-        sorting = {
-          -- https://github.com/hrsh7th/nvim-cmp/blob/main/lua/cmp/config/compare.lua
-          -- comparators = {
-          --   cmp.config.compare.offset,
-          --   cmp.config.compare.exact,
-          --   function(entry1, entry2) -- sort by length ignoring "=~"
-          --     local len1 = string.len(string.gsub(entry1.completion_item.label, "[=~()_]", ""))
-          --     local len2 = string.len(string.gsub(entry2.completion_item.label, "[=~()_]", ""))
-          --     if len1 ~= len2 then
-          --       return len1 - len2 < 0
-          --     end
-          --   end,
-          --   cmp.config.compare.recently_used,
-          --   function(entry1, entry2) -- sort by cmp.config.compare kind (Variable, Function etc)
-          --     local kind1 = modified_kind(entry1:get_kind())
-          --     local kind2 = modified_kind(entry2:get_kind())
-          --     if kind1 ~= kind2 then
-          --       return kind1 - kind2 < 0
-          --     end
-          --   end,
-          --   function(entry1, entry2) -- score by lsp, if available
-          --     local t1 = entry1.completion_item.sortText
-          --     local t2 = entry2.completion_item.sortText
-          --     if t1 ~= nil and t2 ~= nil and t1 ~= t2 then
-          --       return t1 < t2
-          --     end
-          --   end,
-          --   cmp.config.compare.score,
-          --   cmp.config.compare.order,
-          -- },
-          comparators = {
-            cmp.config.compare.sort_text,
-            comparators.inscope_inherent_import,
-            -- cmp.config.compare.scopes,
-            -- cmp.config.compare.kind,
-          },
-        },
-        -- sorting = {
-        --   comparators = {
-        --     cmp.config.compare.offset,
-        --     cmp.config.compare.exact,
-        --     cmp.config.compare.score,
-        --     cmp.config.compare.recently_used,
-        --     cmp.config.compare.locality,
-        --     cmp.config.compare.kind,
-        --     cmp.config.compare.sort_text,
-        --     cmp.config.compare.length,
-        --     cmp.config.compare.order,
-        --   },
-        -- },
-        -- sorting = {
-        --   priority_weight = 1.0,
-        --   comparators = {
-        --     cmp.config.compare.exact,
-        --     cmp.config.compare.locality,
-        --     cmp.config.compare.recently_used,
-        --     cmp.config.compare.score, -- based on :  score = score + ((#sources - (source_index - 1)) * sorting.priority_weight)
-        --     cmp.config.compare.offset,
-        --     cmp.config.compare.order,
-        --     cmp.config.compare.scopes, -- what?
-        --     cmp.config.compare.sort_text,
-        --     cmp.config.compare.kind,
-        --   },
-        -- },
+      },
 
-        mapping = {
-          ["<C-u>"] = cmp.mapping(cmp.mapping.scroll_docs(-4), { "i", "c" }),
-          ["<C-d>"] = cmp.mapping(cmp.mapping.scroll_docs(4), { "i", "c" }),
-
-          ["<C-Space>"] = cmp.mapping(cmp.mapping.complete(), { "i", "c" }),
-
-          ["<C-g>"] = cmp.mapping({ i = cmp.mapping.abort(), c = cmp.mapping.close() }),
-          ["<C-e>"] = cmp.mapping.confirm({ select = true }),
-          ["<CR>"] = cmp.mapping.confirm({ select = false }),
-
-          ["<Tab>"] = cmp.mapping.select_next_item({ behavior = cmp.SelectBehavior.Insert }),
-          ["<S-Tab>"] = cmp.mapping.select_prev_item({ behavior = cmp.SelectBehavior.Insert }),
-
-          ["<C-h>"] = cmp.mapping(function()
-            if luasnip.jumpable(-1) then -- These ifs are unnecessary
-              luasnip.jump(-1)
-            end
-          end, { "i", "s" }),
-          ["<C-l>"] = cmp.mapping(function()
-            if luasnip.expand_or_locally_jumpable() then
-              luasnip.expand_or_jump()
-            end
-          end, { "i", "s" }),
-        },
-      }
-    end,
+      -- Default list of enabled providers defined so that you can extend it
+      -- elsewhere in your config, without redefining it, due to `opts_extend`
+      sources = {
+        default = { "lsp", "path", "snippets", "buffer" },
+      },
+    },
+    opts_extend = { "sources.default" },
   },
 }

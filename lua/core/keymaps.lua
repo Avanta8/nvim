@@ -63,6 +63,7 @@ vim.keymap.set("n", "<ESC>", function()
   utils.close_lsp_floating_window()
   utils.close_gitsigns_floating_windows()
   vim.cmd.noh()
+  vim.snippet.stop()
 
   -- Now also simulate the acutal <ESC> keypress
   local esc = vim.api.nvim_replace_termcodes("<ESC>", true, false, true)

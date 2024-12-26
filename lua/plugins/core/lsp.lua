@@ -88,7 +88,8 @@ local setup_keymaps = function()
         ["<leader>"] = {
           l = {
             name = "lsp",
-            b = { "<CMD>Format<CR>", "Format file", mode = { "n", "v" } },
+            f = { "<CMD>Format<CR>", "Format file", mode = { "n", "v" } },
+            d = { vim.diagnostic.open_float, "Line Diagnostics" },
 
             -- d = { trouble_wrapper("lsp_definitions"), "Definition" },
             -- D = { trouble_wrapper("lsp_declarations"), "Declaration" },
@@ -118,16 +119,16 @@ local setup_keymaps = function()
             -- },
           },
           h = {
-            d = { vim.diagnostic.open_float, "Line Diagnostics" },
             -- stylua: ignore
-            e = { function() builtin.diagnostics({ bufnr = 0 }) end, "Search Diagnostics" },
-            f = { builtin.diagnostics, "Search Workspace Diagnostics" },
+            d = { function() builtin.diagnostics({ bufnr = 0 }) end, "Search Diagnostics" },
+            e = { builtin.diagnostics, "Search Workspace Diagnostics" },
+
             q = { trouble_wrapper("diagnostics"), "Diagnostics Trouble" },
             Q = { vim.diagnostic.setloclist, "Diagnostic Quickfix" },
 
             s = { builtin.lsp_document_symbols, "Search Document Symbols" },
             w = { builtin.lsp_workspace_symbols, "Search Workspace Symbols" },
-            a = { builtin.lsp_dynamic_workspace_symbols, "Search Dynamic Workspace Symbols" },
+            W = { builtin.lsp_dynamic_workspace_symbols, "Search Dynamic Workspace Symbols" },
           },
           k = {
             name = "Glance",
@@ -193,7 +194,7 @@ return {
       setup_keymaps()
 
       local capabilities = vim.lsp.protocol.make_client_capabilities()
-      capabilities = vim.tbl_deep_extend("force", capabilities, require("cmp_nvim_lsp").default_capabilities())
+      capabilities = vim.tbl_deep_extend("force", capabilities, require("blink.cmp").get_lsp_capabilities())
 
       local server_configs = opts.servers or {}
       local function setup_server(server_name)

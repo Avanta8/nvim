@@ -173,7 +173,7 @@ return {
             { "%u[%l%d]+%f[^%l%d]", "%f[%S][%l%d]+%f[^%l%d]", "%f[%P][%l%d]+%f[^%l%d]", "^[%l%d]+%f[^%l%d]" },
             "^().*()$",
           },
-          h = function(ai_type)
+          m = function(ai_type)
             local start_line, end_line = 1, vim.fn.line("$")
             if ai_type == "i" then
               -- Skip first and last blank lines for `i` textobject
@@ -220,8 +220,8 @@ return {
             { "e", desc = "CamelCase / snake_case" },
             { "f", desc = "function" },
             { "g", desc = "class" },
-            { "h", desc = "entire file" },
             { "i", desc = "indent" },
+            { "m", desc = "entire file" },
             { "o", desc = "block, conditional, loop" },
             { "q", desc = "quote `\"'" },
             { "t", desc = "tag" },

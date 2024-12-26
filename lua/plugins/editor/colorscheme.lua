@@ -59,6 +59,7 @@ return {
       flavour = "macchiato",
       -- flavour = "mocha",
       integrations = {
+        blink_cmp = true,
         illuminate = {
           enabled = false,
           -- enabled = true,
