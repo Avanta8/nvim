@@ -83,7 +83,7 @@ local setup_keymaps = function()
           D = { vim.lsp.buf.declaration, "Declaration" },
           t = { builtin.lsp_type_definitions, "Type Definition" },
           y = { builtin.lsp_implementations, "Implementation" },
-          z = { builtin.lsp_references, "References" },
+          r = { builtin.lsp_references, "References" },
         },
         ["<leader>"] = {
           l = {
@@ -135,7 +135,7 @@ local setup_keymaps = function()
             d = { glance_open("definitions"), "Glance definitions" },
             t = { glance_open("type_definitions"), "Glance type definitions" },
             y = { glance_open("implementations"), "Glance implementations" },
-            z = { glance_open("references"), "Glance references" },
+            r = { glance_open("references"), "Glance references" },
           },
           t = {
             f = {

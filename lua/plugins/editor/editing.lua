@@ -2,6 +2,7 @@ local utils = require("core.utils")
 
 return {
   {
+    enabled = false,
     "windwp/nvim-autopairs",
     event = "InsertEnter",
     opts = {
@@ -19,10 +20,26 @@ return {
         rule("<", ">", { "rust" }):with_pair(cond.before_regex("%a+ *", 4)):with_move(function(opts)
           return opts.char == ">"
         end),
+        rule("|", "|", { "rust", "go", "lua" }):with_move(cond.after_regex("|")),
       })
-
-      npairs.add_rules({ rule("|", "|", { "rust", "go", "lua" }):with_move(cond.after_regex("|")) })
     end,
+  },
+
+  {
+    "echasnovski/mini.pairs",
+    opts = {
+      modes = {
+        insert = true,
+        command = true,
+      },
+
+      mappings = {
+        ["<"] = { action = "open", pair = "<>", neigh_pattern = "%S." },
+        [">"] = { action = "close", pair = "<>", neigh_pattern = "[^\\]." },
+
+        ["|"] = { action = "closeopen", pair = "||", neigh_pattern = "[^\\]." },
+      },
+    },
   },
 
   {
@@ -41,6 +58,21 @@ return {
         suffix_next = "n", -- Suffix to search with "next" method
       },
     },
+  },
+
+  {
+    "smoka7/hop.nvim",
+    opts = {
+      -- keys = "etovxqpdygfblzhckisuran",
+      keys = "jfkdls;ahgieurowmv,c.xpq/z",
+      multi_windows = true,
+    },
+    keys = function()
+      local hop = require("hop")
+      return {
+        { "sj", hop.hint_words },
+      }
+    end,
   },
 
   {
