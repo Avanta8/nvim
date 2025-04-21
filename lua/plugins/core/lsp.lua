@@ -118,7 +118,8 @@ local setup_keymaps = function()
             --   z = { gtp.goto_preview_references, "References" },
             -- },
           },
-          h = {
+          r = {
+            name = "Lsp Help",
             -- stylua: ignore
             d = { function() builtin.diagnostics({ bufnr = 0 }) end, "Search Diagnostics" },
             e = { builtin.diagnostics, "Search Workspace Diagnostics" },
@@ -128,7 +129,7 @@ local setup_keymaps = function()
 
             s = { builtin.lsp_document_symbols, "Search Document Symbols" },
             w = { builtin.lsp_workspace_symbols, "Search Workspace Symbols" },
-            W = { builtin.lsp_dynamic_workspace_symbols, "Search Dynamic Workspace Symbols" },
+            j = { builtin.lsp_dynamic_workspace_symbols, "Search Dynamic Workspace Symbols" },
           },
           k = {
             name = "Glance",

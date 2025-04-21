@@ -93,8 +93,8 @@ return {
         ["<C-e>"] = { "select_and_accept" },
         ["<CR>"] = { "accept", "fallback" },
 
-        ["<Tab>"] = { "select_next" },
-        ["<S-Tab>"] = { "select_prev" },
+        ["<Tab>"] = { "select_next", "fallback" },
+        ["<S-Tab>"] = { "select_prev", "fallback" },
 
         ["<C-b>"] = { "scroll_documentation_up" },
         ["<C-f>"] = { "scroll_documentation_down" },

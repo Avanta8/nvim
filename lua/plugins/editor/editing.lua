@@ -37,7 +37,7 @@ return {
         ["<"] = { action = "open", pair = "<>", neigh_pattern = "%S." },
         [">"] = { action = "close", pair = "<>", neigh_pattern = "[^\\]." },
 
-        ["|"] = { action = "closeopen", pair = "||", neigh_pattern = "[^\\]." },
+        -- ["|"] = { action = "closeopen", pair = "||", neigh_pattern = "[^\\]." },
       },
     },
   },
@@ -197,8 +197,8 @@ return {
             i = { "@block.inner", "@conditional.inner", "@loop.inner" },
           }),
           f = ai.gen_spec.treesitter({ a = "@function.outer", i = "@function.inner" }), -- function
-          g = ai.gen_spec.treesitter({ a = "@class.outer", i = "@class.inner" }), -- class
-          c = comment.textobject,
+          c = ai.gen_spec.treesitter({ a = "@class.outer", i = "@class.inner" }), -- class
+          g = comment.textobject,
           t = { "<([%p%w]-)%f[^<%w][^<>]->.-</%1>", "^<.->().*()</[^/]->$" }, -- tags
           d = { "%f[%d]%d+" }, -- digits
           e = { -- Word with case
@@ -247,11 +247,11 @@ return {
             { "`", desc = "` string" },
             { "a", desc = "argument" },
             { "b", desc = ")]} block" },
-            { "c", desc = "comment" },
+            { "g", desc = "comment" },
             { "d", desc = "digit(s)" },
             { "e", desc = "CamelCase / snake_case" },
             { "f", desc = "function" },
-            { "g", desc = "class" },
+            { "c", desc = "class" },
             { "i", desc = "indent" },
             { "m", desc = "entire file" },
             { "o", desc = "block, conditional, loop" },

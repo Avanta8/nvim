@@ -53,7 +53,8 @@
 
 return {
   {
-    "Avanta8/which-key.nvim",
+    -- "Avanta8/which-key.nvim",
+    "folke/which-key.nvim",
     event = "VeryLazy",
     opts = {
       defaults = {
