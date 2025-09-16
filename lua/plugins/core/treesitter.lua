@@ -2,6 +2,7 @@ return {
   {
     "nvim-treesitter/nvim-treesitter",
     version = false, -- last release is way too old and doesn't work on Windows
+    branch = "master", -- can change it to main branch later
     build = ":TSUpdate",
     event = "VeryLazy",
     dependencies = {

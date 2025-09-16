@@ -1,5 +1,4 @@
 local border = "single"
-local winhighlight = "Normal:Normal,FloatBorder:FloatBorder,CursorLine:Visual,Search:None"
 
 return {
   {
@@ -41,9 +40,20 @@ return {
       -- https://cmp.saghen.dev/configuration/reference#completion
       completion = {
 
-        keyword = {},
+        keyword = {
+          range = "prefix",
+        },
 
         trigger = {
+          show_in_snippet = true,
+          show_on_backspace = true,
+          show_on_backspace_after_accept = true,
+          show_on_backspace_after_insert_enter = true,
+          show_on_keyword = true,
+          show_on_trigger_character = true,
+          show_on_insert = true,
+          show_on_accept_on_trigger_character = true,
+          show_on_insert_on_trigger_character = true,
           show_on_blocked_trigger_characters = {},
         },
 
@@ -54,11 +64,16 @@ return {
           },
         },
 
-        accept = {},
+        accept = {
+          auto_brackets = {
+            enabled = true,
+
+            override_brackets_for_filetypes = {},
+          },
+        },
 
         menu = {
           border = border,
-          winhighlight = winhighlight,
 
           draw = {
             treesitter = { "lsp" },
@@ -69,11 +84,15 @@ return {
         documentation = {
           auto_show = true,
           auto_show_delay_ms = 0,
-          update_delay_ms = 0,
+          update_delay_ms = 50,
+          treesitter_highlighting = true,
           window = {
             border = border,
-            winhighlight = winhighlight,
           },
+        },
+
+        ghost_text = {
+          enabled = false,
         },
       },
 
@@ -104,10 +123,9 @@ return {
       },
 
       signature = {
-        enabled = true,
+        enabled = false,
         window = {
           border = border,
-          winhighlight = winhighlight,
         },
       },
 
@@ -115,6 +133,19 @@ return {
       -- elsewhere in your config, without redefining it, due to `opts_extend`
       sources = {
         default = { "lsp", "path", "snippets", "buffer" },
+      },
+
+      cmdline = {
+        keymap = { preset = "inherit" },
+        completion = {
+          list = {
+            selection = {
+              preselect = false,
+              auto_insert = true,
+            },
+          },
+          menu = { auto_show = true },
+        },
       },
     },
     opts_extend = { "sources.default" },

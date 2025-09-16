@@ -15,7 +15,7 @@ local setup_keymaps = function()
       local refresh = function()
         vim.lsp.codelens.refresh({ bufnr = event.buf })
       end
-      if client.supports_method("textDocument/codeLens") then
+      if client:supports_method("textDocument/codeLens") then
         refresh()
 
         -- autocmd BufEnter,CursorHold,InsertLeave <buffer> lua vim.lsp.codelens.refresh()
