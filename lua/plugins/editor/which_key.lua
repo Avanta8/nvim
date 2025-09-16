@@ -56,6 +56,9 @@ return {
     -- "Avanta8/which-key.nvim",
     "folke/which-key.nvim",
     event = "VeryLazy",
+
+    ---@module "which-key"
+    ---@type wk.Opts
     opts = {
       defaults = {
         mode = { "n", "v" },
@@ -75,6 +78,9 @@ return {
         ["<leader>w"] = { name = "+windows" },
         ["<leader>z"] = { name = "+managers" },
       },
+      preset = "helix",
+      show_help = false,
+      notify = false,
       extras = {
         n = {
           mode = { "n" },

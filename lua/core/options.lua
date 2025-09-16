@@ -52,6 +52,7 @@ vim.opt.undolevels = 10000
 vim.opt.virtualedit = "block" -- Allow cursor to move where there is no text in visual block mode
 -- opt.wildmode = "longest:full,full" -- Command-line completion mode
 -- opt.winminwidth = 5 -- Minimum window width
+vim.opt.winborder = "rounded"
 -- opt.wrap = false -- Disable line wrap
 -- vim.opt.fillchars = {
 --   foldopen = "",
@@ -77,15 +78,6 @@ vim.diagnostic.config({
 for name, icon in pairs(require("core.custom").icons.diagnostics) do
   name = "DiagnosticSign" .. name
   vim.fn.sign_define(name, { text = icon, texthl = name, numhl = "" })
-end
-
--- https://github.com/neovim/nvim-lspconfig/wiki/UI-Customization
-local border = "rounded"
-local orig_util_open_floating_preview = vim.lsp.util.open_floating_preview
-function vim.lsp.util.open_floating_preview(contents, syntax, opts, ...)
-  opts = opts or {}
-  opts.border = opts.border or border
-  return orig_util_open_floating_preview(contents, syntax, opts, ...)
 end
 
 vim.lsp.handlers["textDocument/signatureHelp"] = vim.lsp.with(vim.lsp.handlers.signature_help, {

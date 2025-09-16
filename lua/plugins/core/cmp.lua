@@ -1,5 +1,3 @@
-local border = "single"
-
 return {
   {
     "saghen/blink.cmp",
@@ -73,8 +71,6 @@ return {
         },
 
         menu = {
-          border = border,
-
           draw = {
             treesitter = { "lsp" },
             columns = { { "kind_icon", "kind" }, { "label", "label_description", gap = 1 } },
@@ -86,9 +82,6 @@ return {
           auto_show_delay_ms = 0,
           update_delay_ms = 50,
           treesitter_highlighting = true,
-          window = {
-            border = border,
-          },
         },
 
         ghost_text = {
@@ -124,9 +117,6 @@ return {
 
       signature = {
         enabled = false,
-        window = {
-          border = border,
-        },
       },
 
       -- Default list of enabled providers defined so that you can extend it
