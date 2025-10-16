@@ -390,25 +390,26 @@ return {
   },
 
   {
-    enabled = false,
+    -- enabled = false,
     "zbirenbaum/copilot.lua",
     cmd = "Copilot",
     build = ":Copilot auth",
     opts = {
       suggestion = {
         enabled = true,
-        -- auto_trigger = true,
+        auto_trigger = true,
+        hide_during_completion = false,
         keymap = {
           accept = "<C-y>",
-          accept_word = false,
-          accept_line = false,
-          next = "<M-]>",
-          prev = "<M-[>",
-          dismiss = "<C-]>",
+          accept_word = "<C-a>",
+          accept_line = "<C-m>",
+          next = "<C-n>",
+          prev = "<C-p>",
+          dismiss = "<C-d>",
         },
       },
       panel = {
-        enabled = true,
+        enabled = false,
         auto_refresh = true,
       },
       filetypes = {
