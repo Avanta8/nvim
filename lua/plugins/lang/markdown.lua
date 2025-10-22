@@ -1,3 +1,5 @@
+local utils = require("core.utils")
+
 return {
   require("core.lang_setup").create_config({
     install = { "deno" },
@@ -13,6 +15,37 @@ return {
     ft = { "markdown" },
     build = function()
       vim.fn["mkdp#util#install"]()
+    end,
+  },
+
+  {
+    "OXY2DEV/markview.nvim",
+    event = "VeryLazy",
+    opts = {
+      preview = {
+        icon_provider = "devicons",
+        filetypes = { "md", "markdown", "rmd", "codecompanion" },
+        ignore_buftypes = {},
+
+        condition = function(buffer)
+          local ft, bt = vim.bo[buffer].ft, vim.bo[buffer].bt
+
+          if ft == "codecompanion" then
+            return true
+          end
+
+          return bt ~= "nofile"
+        end,
+      },
+    },
+    config = function(_, opts)
+      require("markview").setup(opts)
+
+      vim.api.nvim_create_autocmd("FileType", {
+        group = utils.augroup("MarkviewCodeCompanion"),
+        pattern = "codecompanion",
+        command = "Markview attach",
+      })
     end,
   },
 

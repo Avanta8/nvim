@@ -374,47 +374,17 @@ return {
     "otavioschwanck/arrow.nvim",
     dependencies = {
       utils.which_key_dep({
-        ["<leader>a"] = { "arrow" },
+        ["<leader>o"] = { "arrow" },
       }),
     },
     opts = {
       show_icons = true,
-      leader_key = "<leader>a",
+      leader_key = "<leader>o",
       buffer_leader_key = "<leader>m",
       separate_save_and_remove = true,
       mappings = {
-        toggle = "a",
+        toggle = "o",
         open_horizontal = "s",
-      },
-    },
-  },
-
-  {
-    -- enabled = false,
-    "zbirenbaum/copilot.lua",
-    cmd = "Copilot",
-    build = ":Copilot auth",
-    opts = {
-      suggestion = {
-        enabled = true,
-        auto_trigger = true,
-        hide_during_completion = false,
-        keymap = {
-          accept = "<C-y>",
-          accept_word = "<C-a>",
-          accept_line = "<C-m>",
-          next = "<C-n>",
-          prev = "<C-p>",
-          dismiss = "<C-d>",
-        },
-      },
-      panel = {
-        enabled = false,
-        auto_refresh = true,
-      },
-      filetypes = {
-        markdown = true,
-        help = true,
       },
     },
   },
