@@ -76,8 +76,25 @@ return {
           end,
         },
       },
+      memory = {
+        opts = {
+          chat = {
+            enabled = true,
+            default_memory = {
+              "default",
+              "rules",
+            },
+          },
+        },
+        rules = {
+          description = "Rules for CodeCompanion",
+          parser = "none",
+          files = {
+            "~/.config/agent_guidelines.md",
+          },
+        },
+      },
     },
-
     config = function(_, opts)
       require("codecompanion").setup(opts)
 
