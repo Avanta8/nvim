@@ -30,6 +30,8 @@ return {
         condition = function(buffer)
           local ft, bt = vim.bo[buffer].ft, vim.bo[buffer].bt
 
+          -- CodeCompanion has a filtype of 'codecompanion' and a buftype of 'nofile'.
+          -- However, we don't want markview to attach to all 'nofile' buffers.
           if ft == "codecompanion" then
             return true
           end
@@ -41,12 +43,21 @@ return {
     config = function(_, opts)
       require("markview").setup(opts)
 
+      -- It seems that markview doesn't always automatically attach to CodeCompanion
+      -- so we set up an autocommand to do that.
       vim.api.nvim_create_autocmd("FileType", {
         group = utils.augroup("MarkviewCodeCompanion"),
         pattern = "codecompanion",
         command = "Markview attach",
       })
     end,
+    keys = {
+      {
+        "<leader>tm",
+        "<cmd>Markview Toggle<cr>",
+        desc = "Toggle Markview Preview",
+      },
+    },
   },
 
   {
