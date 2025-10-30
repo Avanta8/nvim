@@ -288,36 +288,16 @@ return {
     end,
   },
   {
-    "williamboman/mason-lspconfig.nvim",
-    dependencies = {
-      "williamboman/mason.nvim",
-    },
-    config = false,
-  },
-  {
-    -- NOTE:
-    -- For some reason, if this plugin is lazy loaded, then it doesn't install the ensure_installed servers.
     "WhoIsSethDaniel/mason-tool-installer.nvim",
     dependencies = {
       "williamboman/mason.nvim",
     },
-    opts = {
-      -- NOTE: ensure_installed should NOT be provided in the format that mason-tool-installer wants!
-      -- This is because lazy (due to using vim.tbl_deep_extend) doesn't merge lists
-      -- properly (it overwrites instead). Therefore, we use a slightly different format
-      -- and then convert into the expected format for mason-tool-installer.
-      --
-      -- NOTE: nvm: changed for now.
-      ensure_installed = {},
-    },
-    -- config = function(_, opts)
-    --   local ensure = vim.deepcopy(opts.ensure_installed)
-    --   for name, s_opts in pairs(opts.ensure_installed) do
-    --     ensure[#ensure + 1] = vim.tbl_extend("error", { name }, s_opts)
-    --   end
-    --   opts.ensure_installed = ensure
-    --   require("mason-tool-installer").setup(opts)
-    -- end,
+    opts = {},
+    config = function(_, opts)
+      opts.ensure_installed =
+        vim.list_extend(opts.ensure_installed or {}, require("core.lang_setup").get_ensure_installed())
+      require("mason-tool-installer").setup(opts)
+    end,
   },
   {
     "williamboman/mason.nvim",
