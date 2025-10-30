@@ -1,14 +1,12 @@
 local utils = require("core.utils")
+local lang = require("core.lang_setup")
+
+vim.lsp.enable("marksman")
+
+lang.add_ensure_installed({ "deno", "marksman" })
+lang.set_formatters("markdown", "deno_fmt")
 
 return {
-  require("core.lang_setup").create_config({
-    install = { "deno" },
-    format = {
-      markdown = { "deno_fmt" },
-    },
-    marksman = {},
-  }),
-
   {
     "iamcco/markdown-preview.nvim",
     cmd = { "MarkdownPreviewToggle", "MarkdownPreview", "MarkdownPreviewStop" },

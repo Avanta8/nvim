@@ -1,13 +1,9 @@
 vim.g.no_rust_maps = true
 
-return {
-  require("core.lang_setup").create_config({
-    rust_analyzer = {
-      mason = false,
-      setup = false,
-    },
-  }),
+-- rust-analyzer is bundled with cargo and doesn't need to be installed with mason.
+-- rust-analyzer setup is handled by rustaceanvim.
 
+return {
   {
     "mrcjkb/rustaceanvim",
     version = "^5", -- Recommended

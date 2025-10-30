@@ -1,31 +1,33 @@
-return {
-  require("core.lang_setup").create_config({
-    install = { "stylua" },
-    format = {
-      lua = { "stylua" },
-    },
-    lua_ls = {
-      settings = {
-        Lua = {
-          workspace = {
-            checkThirdParty = false,
-          },
-          codeLens = {
-            -- enable = true,
-            enable = false,
-          },
-          hint = {
-            enable = true,
-          },
-          completion = {
-            -- callSnippet = "Replace",
-            -- callSnippet = "Both",
-            callSnippet = "Disable",
-          },
-        },
+local lang = require("core.lang_setup")
+
+vim.lsp.config.lua_ls = {
+  settings = {
+    Lua = {
+      workspace = {
+        checkThirdParty = false,
+      },
+      codeLens = {
+        -- enable = true,
+        enable = false,
+      },
+      hint = {
+        enable = true,
+      },
+      completion = {
+        -- callSnippet = "Replace",
+        -- callSnippet = "Both",
+        callSnippet = "Disable",
       },
     },
-  }),
+  },
+}
+
+vim.lsp.enable("lua_ls")
+
+lang.add_ensure_installed({ "lua-language-server", "stylua" })
+lang.set_formatters("lua", { "stylua" })
+
+return {
 
   {
     "folke/lazydev.nvim",
