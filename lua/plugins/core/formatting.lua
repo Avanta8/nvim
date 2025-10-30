@@ -12,8 +12,13 @@ return {
         timeout_ms = 500,
       },
     },
-    init = function()
+    config = function(_, opts)
       local conform = require("conform")
+
+      opts.formatters_by_ft =
+        vim.tbl_extend("error", opts.formatters_by_ft or {}, require("core.lang_setup").get_formatters_by_ft())
+      conform.setup(opts)
+
       vim.api.nvim_create_user_command("Format", function(args)
         local range = nil
 
