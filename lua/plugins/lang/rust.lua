@@ -6,7 +6,7 @@ vim.g.no_rust_maps = true
 return {
   {
     "mrcjkb/rustaceanvim",
-    version = "^5", -- Recommended
+    version = "^6", -- Recommended
     ft = { "rust" },
 
     init = function()
