@@ -22,5 +22,7 @@ vim.lsp.config.clangd = {
 vim.lsp.enable("clangd")
 
 lang.add_ensure_installed("clangd")
+-- No formatter set here because clang-format is available on conform but
+-- doesn't seem to be on mason.
 
 return {}

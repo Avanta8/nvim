@@ -27,5 +27,6 @@ vim.lsp.enable({
 })
 
 lang.add_ensure_installed({ "ruff", "basedpyright" })
+lang.set_formatters("python", { "ruff_organize_imports", "ruff_fix", "ruff_format" })
 
 return {}

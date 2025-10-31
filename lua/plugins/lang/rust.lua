@@ -1,3 +1,7 @@
+local lang = require("core.lang_setup")
+
+lang.set_formatters("rust", { "rustfmt" })
+
 vim.g.no_rust_maps = true
 
 -- rust-analyzer is bundled with cargo and doesn't need to be installed with mason.

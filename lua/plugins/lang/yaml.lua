@@ -9,6 +9,7 @@ vim.lsp.config.yamlls = {
 
 vim.lsp.enable("yamlls")
 
-lang.add_ensure_installed("yaml-language-server")
+lang.add_ensure_installed({ "yaml-language-server", "yamlfmt" })
+lang.set_formatters("yaml", { "yamlfmt" })
 
 return {}
