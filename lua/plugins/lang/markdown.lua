@@ -4,7 +4,7 @@ local lang = require("core.lang_setup")
 vim.lsp.enable("marksman")
 
 lang.add_ensure_installed({ "deno", "marksman" })
-lang.set_formatters("markdown", "deno_fmt")
+lang.set_formatters("markdown", { "deno_fmt", "injected" })
 
 return {
   {
@@ -37,6 +37,11 @@ return {
           return bt ~= "nofile"
         end,
       },
+      markdown = {
+        list_items = {
+          shift_width = 2,
+        },
+      },
     },
     config = function(_, opts)
       require("markview").setup(opts)
@@ -52,8 +57,13 @@ return {
     keys = {
       {
         "<leader>tm",
+        "<cmd>Markview toggle<cr>",
+        desc = "Toggle Markview Preview (local)",
+      },
+      {
+        "<leader>tM",
         "<cmd>Markview Toggle<cr>",
-        desc = "Toggle Markview Preview",
+        desc = "Toggle Markview Preview (global)",
       },
     },
   },
