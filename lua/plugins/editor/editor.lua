@@ -436,4 +436,12 @@ return {
     "HakonHarnes/img-clip.nvim",
     opts = {},
   },
+
+  {
+    "nvim-treesitter/nvim-treesitter-context",
+    opts = {
+      multiwindow = true,
+      -- mode = "topline",
+    },
+  },
 }
