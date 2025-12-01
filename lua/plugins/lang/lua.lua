@@ -28,6 +28,24 @@ lang.add_ensure_installed({ "lua-language-server", "stylua" })
 lang.set_formatters("lua", { "stylua" })
 
 return {
+  {
+    "stevearc/conform.nvim",
+    opts = {
+      formatters = {
+        stylua = {
+          args = {
+            "--search-parent-directories",
+            "--respect-ignores",
+            "--indent-type",
+            "Spaces",
+            "--stdin-filepath",
+            "$FILENAME",
+            "-",
+          },
+        },
+      },
+    },
+  },
 
   {
     "folke/lazydev.nvim",
